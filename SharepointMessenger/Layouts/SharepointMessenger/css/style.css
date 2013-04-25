@@ -1,0 +1,75 @@
+﻿.clear { clear:both; }
+
+#users 
+{
+    list-style:none;
+    padding:5px;
+    margin:0;
+}
+#users li
+{
+    padding:0;
+    margin:5px 0;
+}
+
+#users li img { width:25px; float:left; }
+#users li a { padding:5px 0px 5px 5px; float:left; }
+#users li span { padding:5px; float:right; font-weight:bold; font-size:8px; }
+
+.message-container
+{
+    background:#FFFFFF;
+    border:1px solid #CCCCCC;
+    padding:5px;
+    margin-bottom:10px;
+    overflow-y:scroll;
+    overflow-x:hide;
+}
+
+
+
+.control-container
+{
+    padding:0;
+    margin:0;
+    height:50px;
+}
+
+.chat-dialog textarea
+{
+    float:left;
+    margin-left:-2px;
+    padding:0;
+    border:1px solid #CCCCCC;
+    height:35px;
+    padding:5px;
+}
+
+.chat-dialog button
+{
+    float:right;
+    width:45px;
+    height:45px;
+    margin:0;
+    padding:0;
+    border:1px solid #CCCCCC;
+    cursor:pointer;
+}
+
+.message-container .messages 
+{
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+.message-container .messages li
+{
+    padding:2px;
+    margin:0 0 3px 0;
+}
+
+.message-container .messages .message-sending { color:Blue; padding:0 0 0 10px; background:url(/_layouts/SharepointMessenger/images/loader.gif) 3px 5px no-repeat; }
+.message-container .messages .message-failed { color:Red; margin:0 0 3px 0; }
+.err { color:#CC0000; border:1px solid #F6358A; background:#CCAAAA; padding:10px; }
+.err span { }

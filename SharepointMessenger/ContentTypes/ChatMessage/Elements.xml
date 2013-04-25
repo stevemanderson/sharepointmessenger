@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <Field ID="{C506BAFB-E24F-413E-BE2D-1AEFB9D63788}"
+         Name="smMessage"
+         DisplayName="Message"
+         Type="Note"
+         Required="TRUE"
+         MaxLength="255"
+         NumLines="6"
+         Group="Sharepoint Messenger" />
+  <Field ID="{FA531E1E-DD0F-4A60-9D16-253DB5D12376}"
+         Name="smReceivers"
+         DisplayName="Receivers"
+         Type="User"
+         Required="TRUE"
+         Mult="TRUE"
+         Group="Sharepoint Messenger" />
+  <Field ID="{A6CFD24E-1547-44FC-810E-76B8C62302AB}"
+         Name="smIsRead"
+         DisplayName="IsRead"
+         Type="Boolean"
+         Required="TRUE"
+         Group="Sharepoint Messenger" />
+  
+  <!-- Parent ContentType: Item (0x01) -->
+  <ContentType ID="0x0100507ba0d2aff24d5080459a799335f983"
+               Name="Chat Message"
+               Group="Sharepoint Messenger"
+               Description=""
+               Inherits="TRUE"
+               Version="0">
+    <FieldRefs>
+      <FieldRef
+        DisplayName="Message"
+        Name="smMessage"
+        ID="{C506BAFB-E24F-413E-BE2D-1AEFB9D63788}"
+        Required="TRUE"
+        />
+      <FieldRef
+        DisplayName="Receivers"
+        Name="smReceivers"
+        ID="{FA531E1E-DD0F-4A60-9D16-253DB5D12376}"
+        Required="TRUE"
+        />
+      <FieldRef
+        DisplayName="IsRead"
+        Name="IsRead"
+        ID="{A6CFD24E-1547-44FC-810E-76B8C62302AB}"
+        Required="TRUE"
+        DefaultValue="FALSE"
+        />
+    </FieldRefs>
+  </ContentType>
+</Elements>

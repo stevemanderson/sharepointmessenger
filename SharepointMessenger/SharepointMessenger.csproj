@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BCDF6BF9-4F30-439B-B7C1-5E2E4BDEDA5F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharepointMessenger</RootNamespace>
+    <AssemblyName>SharepointMessenger</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BB1F664B-9266-4fd6-B973-E1E44974B511};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SandboxedSolution>False</SandboxedSolution>
+    <TokenReplacementFileExtensions>$(TokenReplacementFileExtensions);xml;aspx;ascx;webpart;dwp;svc;</TokenReplacementFileExtensions>
+    <ActiveDeploymentConfiguration>No Activation</ActiveDeploymentConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint.Client.ServerRuntime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.SharePoint" />
+    <Reference Include="Microsoft.SharePoint.Security" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Features\SharepointMessengerList\SharepointMessengerList.EventReceiver.cs">
+      <DependentUpon>SharepointMessengerList.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Language.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Language.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ChatMessage.cs" />
+    <Compile Include="Models\Config.cs" />
+    <Compile Include="Models\Contact.cs" />
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repos\ChatMessageFields.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChatMessageFields.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Repos\Repositories.cs" />
+    <Compile Include="WebParts\ContactList\ContactList.cs" />
+    <Compile Include="WebParts\ContactList\ContactListUserControl.ascx.cs">
+      <DependentUpon>ContactListUserControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebParts\ContactList\ContactListUserControl.ascx.designer.cs">
+      <DependentUpon>ContactListUserControl.ascx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WebServices\SharepointMessenger\ISharepointMessenger.cs" />
+    <Compile Include="WebServices\SharepointMessenger\SharepointMessenger.svc.cs">
+      <DependentUpon>SharepointMessenger.svc</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ContentTypes\ChatMessage\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{8ba8a6f8-3cfe-4fd1-a001-087d01b6c03b}</SharePointProjectItemId>
+    </None>
+    <None Include="Features\SharepointMessengerList\SharepointMessengerList.feature">
+      <FeatureId>{dc761ad0-ace8-497a-9d6f-89e2e507aa85}</FeatureId>
+    </None>
+    <None Include="Features\SharepointMessengerWebParts\SharepointMessengerWebParts.feature">
+      <FeatureId>{4d7c4cf4-f0f5-49b8-9bc0-1fc6cf296cba}</FeatureId>
+    </None>
+    <None Include="Images\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{6d3f9a32-9f9f-46b8-bc94-df54efde3b28}</SharePointProjectItemId>
+    </None>
+    <None Include="key.snk" />
+    <Content Include="Layouts\SharepointMessenger\css\style.css" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\animated-overlay.gif" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-icons_222222_256x240.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\jquery-ui-1.10.2.custom.css" />
+    <Content Include="Layouts\SharepointMessenger\css\ui-lightness\jquery-ui-1.10.2.custom.min.css" />
+    <Content Include="Layouts\SharepointMessenger\images\loader.gif" />
+    <Content Include="Layouts\SharepointMessenger\js\jquery-sharepointmessenger-1.0.0.js" />
+    <Content Include="Layouts\SharepointMessenger\js\jquery-ui-1.10.2.custom.min.js" />
+    <None Include="Layouts\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{a0515664-1e3e-477d-969f-5d00528a5bc1}</SharePointProjectItemId>
+    </None>
+    <None Include="Package\Package.package">
+      <PackageId>{fc0ee9d7-55ab-4ba2-9a0c-2a092ad65f8b}</PackageId>
+    </None>
+    <None Include="Package\Package.Template.xml">
+      <DependentUpon>Package.package</DependentUpon>
+    </None>
+    <None Include="WebParts\ContactList\ContactList.webpart" />
+    <None Include="WebParts\ContactList\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{2a0435eb-c42b-4f09-8e8e-bcb096a1508b}</SharePointProjectItemId>
+    </None>
+    <None Include="WebServices\SharepointMessenger\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{ac5baed7-92d3-4cae-99e2-2503439b9cdd}</SharePointProjectItemId>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images\SharepointMessager\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ContentTypes\ChatMessage\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Features\SharepointMessengerList\SharepointMessengerList.Template.xml">
+      <DependentUpon>SharepointMessengerList.feature</DependentUpon>
+    </Content>
+    <Content Include="Features\SharepointMessengerWebParts\SharepointMessengerWebParts.Template.xml">
+      <DependentUpon>SharepointMessengerWebParts.feature</DependentUpon>
+    </Content>
+    <Content Include="Layouts\SharepointMessenger\js\jquery-1.9.1.min.js" />
+    <Content Include="Layouts\SharepointMessenger\js\json2.js" />
+    <Content Include="WebParts\ContactList\ContactListUserControl.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="WebParts\ContactList\Elements.xml" />
+    <Content Include="WebServices\SharepointMessenger\SharepointMessenger.svc" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Language.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Language.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Repos\ChatMessageFields.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ChatMessageFields.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />
+</Project>

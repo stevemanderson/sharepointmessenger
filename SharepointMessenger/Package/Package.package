@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="fc0ee9d7-55ab-4ba2-9a0c-2a092ad65f8b" solutionId="fc0ee9d7-55ab-4ba2-9a0c-2a092ad65f8b" resetWebServer="false" name="Sharepoint Messager" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <features>
+    <featureReference itemId="4d7c4cf4-f0f5-49b8-9bc0-1fc6cf296cba" />
+    <featureReference itemId="dc761ad0-ace8-497a-9d6f-89e2e507aa85" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="a0515664-1e3e-477d-969f-5d00528a5bc1" />
+    <projectItemReference itemId="6d3f9a32-9f9f-46b8-bc94-df54efde3b28" />
+  </projectItems>
+</package>
