@@ -7,8 +7,8 @@
     </metaData>
     <data>
       <properties>
-        <property name="Title" type="string">ContactList</property>
-        <property name="Description" type="string">My Visual WebPart</property>
+        <property name="Title" type="string">Sharepoint Messenger Contact List</property>
+        <property name="Description" type="string">Contact List for Sharepoint Messenger</property>
       </properties>
     </data>
   </webPart>

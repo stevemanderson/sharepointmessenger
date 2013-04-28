@@ -12,6 +12,7 @@
         var chats = [];
         var self = this;
         var settings = $.extend({
+            ShowContactImages: false,
             TimeZone: 0,
             CurrentUsername: "You",
             MessageTimeOut: 5000,
@@ -262,12 +263,16 @@
             var users = jQuery.parseJSON(xhr.responseText);
             var list = $('#users');
             $.each(users, function () {
-                var img = $('<img src="' + this.ImageUrl + '" alt="User Image" />');
                 var span = $('<a href="#">' + this.Name + '</a>');
                 var msgs = $('<span class="message-count">0</span>');
                 var li = $('<li></li>');
                 li.attr('data-id', this.ID);
-                li.append(img);
+
+                if (settings.ShowContactImages) {
+                    var img = $('<img src="' + this.ImageUrl + '" alt="User Image" />');
+                    li.append(img);
+                }
+
                 li.append(span);
                 li.append(msgs);
                 li.append("<div class='clear'></div>");

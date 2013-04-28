@@ -9,7 +9,8 @@ namespace SharepointMessenger.WebParts.ContactList
 {
     public partial class ContactListUserControl : UserControl
     {
-
+        public int MessageTimeOut { set; get; }
+        public bool ShowContactImages { set; get; }
         protected string ThemeName
         {
             get 
