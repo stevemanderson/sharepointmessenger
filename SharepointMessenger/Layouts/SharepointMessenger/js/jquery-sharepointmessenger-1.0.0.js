@@ -1,14 +1,5 @@
 ﻿(function ($) {
-    function printDate() {
-        var temp = new Date();
-        var dateStr = (temp.getMonth() + 1).toString() + '/' +
-                  temp.getDate().toString() + '/' +
-                  temp.getFullYear().toString() + ' ' +
-                  temp.getHours().toString() + ':' +
-                  temp.getMinutes().toString() + ':' +
-                  temp.getSeconds().toString();
-        return dateStr;
-    }
+
 
     function cleanHTML(value) {
         var temp = document.createElement("div");
@@ -21,6 +12,7 @@
         var chats = [];
         var self = this;
         var settings = $.extend({
+            TimeZone: 0,
             CurrentUsername: "You",
             MessageTimeOut: 5000,
             Service: "/_vti_bin/SharepointMessenger.WebServices/SharepointMessenger.svc",
@@ -38,6 +30,30 @@
                 err.append($("<span>" + xmlhttp.statusText + "</span>"));
                 $('#sharepoint-messenger').prepend(err);
             }
+        }
+
+        function getAdjustedDate() {
+            var d = new Date();
+            var localTime = d.getTime();
+            var localOffset = d.getTimezoneOffset() * 60000;
+            var utc = localTime + localOffset;
+            var offset = settings.TimeZone;
+            var d2 = utc + (3600000 * offset);
+            return new Date(d2);
+        }
+
+        function getDate() {
+            var temp = getAdjustedDate();
+            var result = (temp.getMonth() + 1).toString() + '/' + temp.getDate().toString() + '/' + temp.getFullYear().toString();
+            return result;
+        }
+
+        function getTime() {
+            var temp = getAdjustedDate();
+            var hours = (temp.getHours() < 10) ? ('0' + temp.getHours().toString()) : temp.getHours().toString();
+            var minutes = (temp.getMinutes() < 10) ? ('0' + temp.getMinutes().toString()) : temp.getMinutes().toString();
+            var result = hours + ':' + minutes;
+            return result;
         }
 
         var service = {
@@ -128,7 +144,7 @@
         function SubmitMessage(list, message, id) {
             message = cleanHTML(message);
             if (message.length == 0) return;
-            var li = AddMessage(list, { "CreatedBy": settings.CurrentUsername, "Message": message }, false);
+            var li = AddMessage(list, { "CreatedBy": settings.CurrentUsername, "Message": message, "CreatedTimeOnly": getTime() }, false);
             Repository.ChatMessages.Create(
                 message,
                 function () { li.removeClass(); },
@@ -166,7 +182,7 @@
             if (!sent) {
                 li.addClass('message-sending');
             }
-            li.html("<b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message);
+            li.html(e.CreatedTimeOnly + " <b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message);
             list.append(li);
             return li;
         }

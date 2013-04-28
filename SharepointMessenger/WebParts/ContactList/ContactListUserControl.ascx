@@ -19,5 +19,5 @@
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-sharepointmessenger-1.0.0.js"></script>
 
 <script type="text/javascript">
-    $('#sharepoint-messenger').sharepointmessenger({CurrentUsername:'<%= CurrentMessageUser %>'});
+    $('#sharepoint-messenger').sharepointmessenger({CurrentUsername:'<%= CurrentMessageUser %>', TimeZone:<%= UserTimeZone %> });
 </script>

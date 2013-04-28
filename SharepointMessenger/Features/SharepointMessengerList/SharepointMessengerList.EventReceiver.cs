@@ -34,12 +34,7 @@ namespace SharepointMessenger.Features.SharepointMessengerList
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)
         {
-            using (SPWeb web = (properties.Feature.Parent as SPWeb))
-            {
-                Config.DeleteList(web);
-                Config.DeleteGroup(web);
-                Config.DeletePermission(web);
-            }
+
         }
 
 
@@ -52,10 +47,15 @@ namespace SharepointMessenger.Features.SharepointMessengerList
 
         // Uncomment the method below to handle the event raised before a feature is uninstalled.
 
-        //public override void FeatureUninstalling(SPFeatureReceiverProperties properties)
-        //{
-
-        //}
+        public override void FeatureUninstalling(SPFeatureReceiverProperties properties)
+        {
+            using (SPWeb web = (properties.Feature.Parent as SPWeb))
+            {
+                Config.DeleteList(web);
+                Config.DeleteGroup(web);
+                Config.DeletePermission(web);
+            }
+        }
 
         // Uncomment the method below to handle the event raised when a feature is upgrading.
 

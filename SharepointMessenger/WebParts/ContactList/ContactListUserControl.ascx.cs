@@ -9,6 +9,7 @@ namespace SharepointMessenger.WebParts.ContactList
 {
     public partial class ContactListUserControl : UserControl
     {
+
         protected string ThemeName
         {
             get 
@@ -25,6 +26,21 @@ namespace SharepointMessenger.WebParts.ContactList
         protected string CurrentMessageUser
         {
             get { return SPContext.Current.Web.CurrentUser.Name; }
+        }
+        protected string UserTimeZone
+        {
+            get
+            {
+                SPTimeZone zone = SPContext.Current.Web.RegionalSettings.TimeZone;
+                if (SPContext.Current.Web.CurrentUser.RegionalSettings != null)
+                {
+                    SPRegionalSettings rs = SPContext.Current.Web.CurrentUser.RegionalSettings;
+                    zone = rs.TimeZone;
+                }
+                var time = (zone.Information.Bias / -60);
+                time += (zone.Information.DaylightBias / -60);
+                return time.ToString();
+            }
         }
         protected void Page_Load(object sender, EventArgs e)
         {

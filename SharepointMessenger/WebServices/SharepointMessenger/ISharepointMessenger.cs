@@ -59,6 +59,10 @@ namespace SharepointMessenger.WebServices
         public string CreatedBy { get; set; }
         [DataMember]
         public string Created { get; set; }
+        [DataMember]
+        public string CreatedDateOnly { get; set; }
+        [DataMember]
+        public string CreatedTimeOnly { get; set; }
     }
 
     [DataContract]

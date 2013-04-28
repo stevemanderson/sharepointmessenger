@@ -75,6 +75,13 @@ namespace SharepointMessenger.WebServices
                 if (SPUtility.ValidateFormDigest())
                 {
                     IChatMessageRepository repo = new ChatMessageRepository();
+                    // get the users timezone
+                    SPTimeZone zone = SPContext.Current.Web.RegionalSettings.TimeZone;
+                    if (SPContext.Current.Web.CurrentUser.RegionalSettings != null)
+                    {
+                        SPRegionalSettings rs = SPContext.Current.Web.CurrentUser.RegionalSettings;
+                        zone = rs.TimeZone;
+                    }
                     result = new ChatMessageListResult()
                     {
                         LastRequested = DateTime.Now.ToString(),
@@ -82,7 +89,9 @@ namespace SharepointMessenger.WebServices
                         .Select(m => new ChatMessageServiceView()
                         {
                             ID = m.ID,
-                            Created = m.Created.ToString(),
+                            Created = (zone.UTCToLocalTime(m.Created)).ToString(),
+                            CreatedDateOnly = (zone.UTCToLocalTime(m.Created).Date).ToShortDateString(),
+                            CreatedTimeOnly = (zone.UTCToLocalTime(m.Created)).ToString("HH:mm"),
                             CreatedBy = m.CreatedBy.Name,
                             Message = m.Message,
                             Receivers = m.Receivers.Select(r => new ChatContactServiceView()
