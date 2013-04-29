@@ -30,10 +30,10 @@ namespace SharepointMessenger.Features.SharepointMessengerList
         }
 
 
-        // Uncomment the method below to handle the event raised before a feature is deactivated.
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)
         {
+            // if you deactivate the feature, it deletes all the data for the feature.
             using (SPWeb web = (properties.Feature.Parent as SPWeb))
             {
                 Config.DeleteList(web);
@@ -52,10 +52,10 @@ namespace SharepointMessenger.Features.SharepointMessengerList
 
         // Uncomment the method below to handle the event raised before a feature is uninstalled.
 
-        //public override void FeatureUninstalling(SPFeatureReceiverProperties properties)
-        //{
+        public override void FeatureUninstalling(SPFeatureReceiverProperties properties)
+        {
 
-        //}
+        }
 
         // Uncomment the method below to handle the event raised when a feature is upgrading.
 

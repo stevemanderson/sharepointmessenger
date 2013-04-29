@@ -203,9 +203,11 @@ namespace SharepointMessenger.Repositories
                 "<FieldRef Name='{0}' /><FieldRef Name='{1}' /><FieldRef Name='{2}' /><FieldRef Name='{3}' /><FieldRef Name='{4}' />",
                 "ID", ChatMessageFields.Message, ChatMessageFields.Receivers, ChatMessageFields.Created, ChatMessageFields.CreatedBy);
             query.ViewFieldsOnly = true;
+            query.DatesInUtc = true;
             query.ViewAttributes = "Scope=\"RecursiveAll\"";
             var items = list.GetItems(query);
             List<ChatMessage> result = new List<ChatMessage>();
+
             foreach (SPItem item in items)
             {
                 var cm = new ChatMessage();
@@ -241,6 +243,7 @@ namespace SharepointMessenger.Repositories
                 "ID", ChatMessageFields.Message, ChatMessageFields.Receivers, ChatMessageFields.Created, ChatMessageFields.CreatedBy);
             query.ViewFieldsOnly = true;
             query.ViewAttributes = "Scope=\"RecursiveAll\"";
+            query.DatesInUtc = true;
             var items = list.GetItems(query);
             List<ChatMessage> result = new List<ChatMessage>();
             foreach (SPItem item in items)
