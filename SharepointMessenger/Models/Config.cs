@@ -108,8 +108,7 @@ namespace SharepointMessenger.Models
 
         public static void DeleteList(SPWeb web)
         {
-            SPList list = null;
-            list = web.Lists.TryGetList(Language.SMUListName);
+            SPList list = GetList(web);
             if (list != null)
                 list.Delete();
         }

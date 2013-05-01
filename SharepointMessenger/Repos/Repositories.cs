@@ -105,11 +105,9 @@ namespace SharepointMessenger.Repositories
     public class ChatMessageRepository :
         IChatMessageRepository
     {
-        private string ListName { get { return Language.SMUListName; } }
-
         public ChatMessage GetByID(int id)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             SPItem item = list.Items.GetItemById(id);
             return new ChatMessage()
             {
@@ -123,7 +121,7 @@ namespace SharepointMessenger.Repositories
         {
             IContactRepository repo = new ContactRepository();
             var id = SPContext.Current.Web.CurrentUser.ID;
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             List<int> ids = message.Receivers.Select(r => r.ID).ToList();
             ids.Add(id);
             SPListItem conversation = Config.GetConversationFolder(list, ids.ToArray());
@@ -141,7 +139,7 @@ namespace SharepointMessenger.Repositories
 
         public void DeleteByID(int id)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             list.Items.DeleteItemById(id);
         }
 
@@ -152,7 +150,7 @@ namespace SharepointMessenger.Repositories
 
         public void SetChatMessagesRead(int[] ids)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             StringBuilder methodBuilder = new StringBuilder();
             string batch = string.Empty;
             string batchFormat = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -183,7 +181,7 @@ namespace SharepointMessenger.Repositories
 
         public ChatMessage[] GetUnReadByUserIDAndSenderID(int userID, int senderID)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             SPQuery query = new SPQuery();
             StringBuilder builder = new StringBuilder();
             builder.Append("<Where><And>");
@@ -225,7 +223,7 @@ namespace SharepointMessenger.Repositories
 
         public ChatMessage[] GetPendingMessageByUser(int id)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             SPQuery query = new SPQuery();
             StringBuilder builder = new StringBuilder();
             builder.Append("<Where><And>");
