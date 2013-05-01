@@ -69,6 +69,8 @@
     margin:0 0 3px 0;
 }
 
+.message-container .messages .is-old { color:#CCCCCC; }
+
 .message-container .messages .message-sending { color:Blue; padding:0 0 0 10px; background:url(/_layouts/SharepointMessenger/images/loader.gif) 3px 5px no-repeat; }
 .message-container .messages .message-failed { color:Red; margin:0 0 3px 0; }
 .err { color:#CC0000; border:1px solid #F6358A; background:#CCAAAA; padding:10px; }

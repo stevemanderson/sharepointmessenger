@@ -96,6 +96,9 @@
                 Create: function (message, callback, params, onfail) {
                     this.DataSource.Send('post', 'ChatMessages/Create', { "message": params }, callback, params, onfail);
                 },
+                StartConversation: function (id, callback, params, onfail) {
+                    this.DataSource.Send('post', 'ChatMessages/StartConversation', { "SenderID": id }, callback, params, onfail);
+                },
                 GetNewMessages: function (id, callback, params, onfail) {
                     this.DataSource.Send('post', 'ChatMessages', { "SenderID": id }, callback, params, onfail);
                 },
@@ -125,7 +128,7 @@
             text.css('width', (totalWidthAvailable - 60) + 'px');
         }
 
-        function GetChatMessages(id) {
+        function GetChatMessages(id, first) {
             $('#sharepoint-messenger .err').remove();
             var found = false;
             for (var i = 0; i < chats.length; ++i) {
@@ -135,11 +138,17 @@
                 }
             }
             if (!found) return;
-            Repository.ChatMessages.GetNewMessages(id, LoadMessages, { "ID": id },
-            function (xmlhttp, params) {
-                TopError(xmlhttp);
-            });
-            setTimeout(function () { GetChatMessages(id); }, settings.MessageTimeOut);
+            if (first) {
+                Repository.ChatMessages.StartConversation(id, LoadMessages, { "ID": id }, function (xmlhttp, params) {
+                    TopError(xmlhttp);
+                });
+            }
+            else {
+                Repository.ChatMessages.GetNewMessages(id, LoadMessages, { "ID": id }, function (xmlhttp, params) {
+                    TopError(xmlhttp);
+                });
+            }
+            setTimeout(function () { GetChatMessages(id, false); }, settings.MessageTimeOut);
         }
 
         function SubmitMessage(list, message, id) {
@@ -183,7 +192,14 @@
             if (!sent) {
                 li.addClass('message-sending');
             }
-            li.html(e.CreatedTimeOnly + " <b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message);
+            if (e.IsOld) {
+                li.addClass('is-old');
+                var html = "";
+                if (getDate() != e.CreatedDateOnly) html += e.CreatedDateOnly + " ";
+                html += e.CreatedTimeOnly + " <b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message;
+                li.html(html);
+            }
+            else { li.html(e.CreatedTimeOnly + " <b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message); }
             list.append(li);
             return li;
         }
@@ -256,7 +272,7 @@
                 width: 400,
                 height: 400
             });
-            GetChatMessages(o.ID);
+            GetChatMessages(o.ID, true);
         }
 
         function LoadUsers(xhr) {

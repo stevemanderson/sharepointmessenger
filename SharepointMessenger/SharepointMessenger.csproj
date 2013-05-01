@@ -406,7 +406,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images\SharepointMessager\" />
+    <Folder Include="Images\SharepointMessenger\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ContentTypes\ChatMessage\Elements.xml">

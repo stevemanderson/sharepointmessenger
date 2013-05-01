@@ -16,6 +16,10 @@ namespace SharepointMessenger.WebServices
         void CreateChatMessage(ChatMessageServiceView message);
 
         [OperationContract]
+        [WebInvoke(UriTemplate = "ChatMessages/StartConversation", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        ChatMessageListResult StartConversation(int SenderID);
+
+        [OperationContract]
         [WebInvoke(UriTemplate = "ChatMessages", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         ChatMessageListResult ChatMessages(int SenderID);
 
@@ -63,6 +67,8 @@ namespace SharepointMessenger.WebServices
         public string CreatedDateOnly { get; set; }
         [DataMember]
         public string CreatedTimeOnly { get; set; }
+        [DataMember]
+        public bool IsOld { get; set; }
     }
 
     [DataContract]
