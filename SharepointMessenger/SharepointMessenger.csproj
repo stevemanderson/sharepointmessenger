@@ -14,7 +14,7 @@
     <ProjectTypeGuids>{BB1F664B-9266-4fd6-B973-E1E44974B511};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SandboxedSolution>False</SandboxedSolution>
     <TokenReplacementFileExtensions>$(TokenReplacementFileExtensions);xml;aspx;ascx;webpart;dwp;svc;</TokenReplacementFileExtensions>
-    <ActiveDeploymentConfiguration>Default</ActiveDeploymentConfiguration>
+    <ActiveDeploymentConfiguration>No Activation</ActiveDeploymentConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -95,6 +95,12 @@
     <None Include="ContentTypes\ChatMessage\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{8ba8a6f8-3cfe-4fd1-a001-087d01b6c03b}</SharePointProjectItemId>
     </None>
+    <None Include="Definitions\ChatMessagesTemplate\ChatMessages\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{7356675c-e27b-4abe-a14d-abee57c5046e}</SharePointProjectItemId>
+    </None>
+    <None Include="Definitions\ChatMessagesTemplate\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{c828847f-61a3-431f-9a6c-725e5085b776}</SharePointProjectItemId>
+    </None>
     <None Include="Features\SharepointMessengerList\SharepointMessengerList.feature">
       <FeatureId>{dc761ad0-ace8-497a-9d6f-89e2e507aa85}</FeatureId>
     </None>
@@ -105,6 +111,9 @@
       <SharePointProjectItemId>{6d3f9a32-9f9f-46b8-bc94-df54efde3b28}</SharePointProjectItemId>
     </None>
     <None Include="key.snk" />
+    <Content Include="Definitions\ChatMessagesTemplate\Elements.xml" />
+    <Content Include="Definitions\ChatMessagesTemplate\ChatMessages\Elements.xml" />
+    <Content Include="Definitions\ChatMessagesTemplate\Schema.xml" />
     <Content Include="Layouts\SharepointMessenger\css\azure\images\animated-overlay.gif" />
     <Content Include="Layouts\SharepointMessenger\css\azure\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Layouts\SharepointMessenger\css\azure\images\ui-bg_flat_75_ffffff_40x100.png" />

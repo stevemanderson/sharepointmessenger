@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharepointMessenger.Extensions;
+using Microsoft.SharePoint.Utilities;
 
 namespace SharepointMessenger.Models
 {
@@ -23,8 +24,8 @@ namespace SharepointMessenger.Models
         private string _message;
         public string Message
         {
-            get { return _message; }
-            set { _message = value.CleanXSS(); }
+            get { return SPHttpUtility.HtmlDecode(_message); }
+            set { _message = SPHttpUtility.HtmlEncode(value); }
         }
         private Contact[] _receivers;
         public Contact[] Receivers

@@ -3,4 +3,8 @@
   <activationDependencies>
     <referencedFeatureActivationDependency minimumVersion="" itemId="4d7c4cf4-f0f5-49b8-9bc0-1fc6cf296cba" />
   </activationDependencies>
+  <projectItems>
+    <projectItemReference itemId="7356675c-e27b-4abe-a14d-abee57c5046e" />
+    <projectItemReference itemId="c828847f-61a3-431f-9a6c-725e5085b776" />
+  </projectItems>
 </feature>

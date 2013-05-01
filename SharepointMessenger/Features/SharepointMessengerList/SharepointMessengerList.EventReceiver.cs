@@ -25,7 +25,8 @@ namespace SharepointMessenger.Features.SharepointMessengerList
             {
                 Config.CreatePersmission(web);
                 Config.CreateGroup(web);
-                Config.CreateList(web);
+                //Config.CreateList(web);
+                Config.ApplyGroupRoleAssignments(web, Config.GetList(web));
             }
         }
 
