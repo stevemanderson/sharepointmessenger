@@ -82,7 +82,7 @@ namespace SharepointMessenger.Models
 #endif
 
             list.ContentTypesEnabled = true;
-            list.BreakRoleInheritance(true);
+
             list.EnableVersioning = false;
             list.ContentTypes.Add(ct);
 
@@ -94,8 +94,9 @@ namespace SharepointMessenger.Models
             ApplyGroupRoleAssignments(web, list);
         }
 
-        private static void ApplyGroupRoleAssignments(SPWeb web, SPList list)
+        public static void ApplyGroupRoleAssignments(SPWeb web, SPList list)
         {
+            list.BreakRoleInheritance(true);
             SPGroup grp = web.SiteGroups[Language.SMUGroupName];
             SPRoleAssignment ass = new SPRoleAssignment(grp);
             SPRoleDefinition def = web.RoleDefinitions[Language.SMUPermissionName];

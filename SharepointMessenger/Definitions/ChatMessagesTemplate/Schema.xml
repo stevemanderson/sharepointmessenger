@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="Chat Messages" FolderCreation="FALSE" Direction="$Resources:Direction;" Url="Lists/SharepointMessenger-ChatMessages" BaseType="0" xmlns="http://schemas.microsoft.com/sharepoint/">
+  <MetaData>
+    <ContentTypes>
+      <ContentType ID="0x0100507ba0d2aff24d5080459a799335f983" Name="Chat Message" Group="Sharepoint Messenger" Description="" Inherits="TRUE" Version="0">
+        <FieldRefs>
+          <FieldRef DisplayName="Message" Name="smMessage" ID="{C506BAFB-E24F-413E-BE2D-1AEFB9D63788}" Required="TRUE" />
+          <FieldRef DisplayName="Receivers" Name="smReceivers" ID="{FA531E1E-DD0F-4A60-9D16-253DB5D12376}" Required="TRUE" />
+          <FieldRef DisplayName="IsRead" Name="IsRead" ID="{A6CFD24E-1547-44FC-810E-76B8C62302AB}" Required="TRUE" DefaultValue="FALSE" />
+        </FieldRefs>
+      </ContentType>
+    </ContentTypes>
+    <Fields>
+      <Field ID="{c506bafb-e24f-413e-be2d-1aefb9d63788}" Name="smMessage" DisplayName="Message" Type="Note" Required="TRUE" MaxLength="255" NumLines="6" Group="Sharepoint Messenger" />
+      <Field ID="{fa531e1e-dd0f-4a60-9d16-253db5d12376}" Name="smReceivers" DisplayName="Receivers" Type="User" Required="TRUE" Mult="TRUE" Group="Sharepoint Messenger" />
+      <Field ID="{a6cfd24e-1547-44fc-810e-76b8c62302ab}" Name="smIsRead" DisplayName="IsRead" Type="Boolean" Required="TRUE" Group="Sharepoint Messenger" />
+    </Fields>
+    <Views>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,camlid4;" DefaultView="TRUE" MobileView="True" MobileDefaultView="True" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/images/announce.png" Url="AllItems.aspx">
+        <Toolbar Type="Standard" />
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <ParameterBindings>
+          <ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noXinviewofY_LIST)" />
+          <ParameterBinding Name="NoAnnouncementsHowTo" Location="Resource(wss,noXinviewofY_DEFAULT)" />
+        </ParameterBindings>
+        <ViewFields>
+          <FieldRef Name="ID"></FieldRef>
+          <FieldRef Name="Type"></FieldRef>
+          <FieldRef Name="Author"></FieldRef>
+          <FieldRef Name="Created"></FieldRef>
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="Created" Ascending="FALSE"></FieldRef>
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+  </MetaData>
+</List>
