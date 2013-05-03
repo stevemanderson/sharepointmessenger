@@ -185,7 +185,10 @@ namespace SharepointMessenger.Repositories
             SPList list = Config.GetList(SPContext.Current.Web);
             SPQuery query = new SPQuery();
             StringBuilder builder = new StringBuilder();
-            builder.Append("<Where><Or>");
+            builder.Append("<Where><And>");
+            builder.AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "1");
+
+            builder.Append("<Or>");
             builder
                 .Append("<And>")
                 .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, userID)
@@ -196,7 +199,9 @@ namespace SharepointMessenger.Repositories
                 .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, senderID)
                 .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, userID)
                 .Append("</And>");
-            builder.Append("</Or></Where><OrderBy><FieldRef Name='Created' Ascending='FALSE' /></OrderBy>");
+            builder.Append("</Or>");
+
+            builder.Append("</And></Where><OrderBy><FieldRef Name='Created' Ascending='FALSE' /></OrderBy>");
             query.Query = builder.ToString();
             query.ViewFields = string.Format(
                 "<FieldRef Name='{0}' /><FieldRef Name='{1}' /><FieldRef Name='{2}' /><FieldRef Name='{3}' /><FieldRef Name='{4}' />",
@@ -237,7 +242,7 @@ namespace SharepointMessenger.Repositories
                 .Append("</And>");
             builder
                 .Append("<Or>")
-                .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Boolean'>{1}</Value></Eq>", ChatMessageFields.IsRead, "FALSE")
+                .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "0")
                 .AppendFormat("<IsNull><FieldRef Name='{0}' /></IsNull>", ChatMessageFields.IsRead)
                 .Append("</Or>");
             builder.Append("</And></Where>");
