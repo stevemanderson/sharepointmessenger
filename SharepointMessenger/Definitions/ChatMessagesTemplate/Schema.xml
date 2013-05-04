@@ -26,7 +26,6 @@
         </ParameterBindings>
         <ViewFields>
           <FieldRef Name="ID"></FieldRef>
-          <FieldRef Name="Type"></FieldRef>
           <FieldRef Name="Author"></FieldRef>
           <FieldRef Name="Created"></FieldRef>
         </ViewFields>

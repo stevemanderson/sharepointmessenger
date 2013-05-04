@@ -61,6 +61,15 @@ namespace SharepointMessenger {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access Denied.
+        /// </summary>
+        internal static string AccessDenied {
+            get {
+                return ResourceManager.GetString("AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Conversation Folder {0} already exists..
         /// </summary>
         internal static string ConversationAlreadyExists {

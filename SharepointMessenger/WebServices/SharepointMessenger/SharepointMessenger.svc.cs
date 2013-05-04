@@ -34,6 +34,34 @@ namespace SharepointMessenger.WebServices
             return result;
         }
 
+        public ContactMessageInfoView GetContactInfoByID(int id)
+        {
+            ContactMessageInfoView result = null;
+            try
+            {
+                IGroupRepository repo = new GroupRepository();
+                IContactRepository contactRepo = new ContactRepository();
+                var group = repo.GetGroup(Language.SMUGroupName);
+                var contact = contactRepo.GetByID(group, id);
+                // TODO: update the exception here with a custom one that goes back to the user if the contact is null
+                // currently it will throw an exception but will just give generic error.
+                result = new ContactMessageInfoView()
+                {
+                    ID = id,
+                    ImageUrl = contact.ImageUrl,
+                    EmailAddress = "", //TODO: get the user's email address
+                    Name = contact.Name
+                };
+            }
+            catch (Exception ex)
+            {
+                Config.WriteException(ex);
+                WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.GetMessagesError;
+            }
+            return result;
+        }
+
         public void CreateChatMessage(ChatMessageServiceView message)
         {
             try
@@ -52,6 +80,7 @@ namespace SharepointMessenger.WebServices
                 }
                 else
                 {
+                    Config.WriteException(new Exception(Language.AccessDenied));
                     WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.Unauthorized;
                     WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.UserNotValidated;
                 }
