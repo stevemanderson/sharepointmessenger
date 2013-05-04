@@ -266,7 +266,7 @@
         function GetUserInformation(id) {
             var info = $('<div class="information"></div>');
             var closeButton = $('<button class="visible-toggle"></button>');
-            var userInfo = $('<div class="user-information"></div>');
+            var userInfo = $('<div class="user-information ui-widget-header"></div>');
             var img = $('<img src="/_layouts/SharepointMessenger/images/loader-50x50.gif" alt="User Image" />');
             var name = $('<span class="name"></span>');
             var emailaddress = $('<span class="emailaddress"></span>');
@@ -284,7 +284,7 @@
             });
             closeButton.click(function () {
                 var dialog = $(this).closest('.chat-dialog');
-                $(this).next().slideToggle('slow', function () {
+                $(this).next().slideToggle('fast', function () {
                     if ($(this).is(':visible')) {
                         $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-nw"} });
                     }
