@@ -30,6 +30,10 @@ namespace SharepointMessenger.WebServices
         [OperationContract]
         [WebInvoke(UriTemplate = "ChatMessages/PendingMessageCounts", Method = "GET", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         PendingMessageView[] PendingMessageCounts();
+
+        [OperationContract]
+        [WebGet(UriTemplate = "ChatMessages/ExportHistory/{SenderID}", BodyStyle = WebMessageBodyStyle.Bare)]
+        System.IO.Stream ExportHistory(string SenderID);
     }
 
     [DataContract]

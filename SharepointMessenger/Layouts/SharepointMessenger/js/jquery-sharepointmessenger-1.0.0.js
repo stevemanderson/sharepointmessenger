@@ -152,6 +152,9 @@
                 },
                 GetPendingMessageCounts: function (callback, params, onfail) {
                     this.DataSource.Send('get', 'ChatMessages/PendingMessageCounts', {}, callback, params, onfail);
+                },
+                ExportHistory: function (id, callback, params, onfail) {
+                    this.DataSource.Send('post', 'ChatMessages/ExportHistory', { "SenderID": id }, callback, params, onfail);
                 }
             }
         };
@@ -335,7 +338,7 @@
                 icons: {
                     primary: icon
                 },
-                text:false 
+                text: false
             });
             exportButton.button({
                 icons: {
@@ -343,6 +346,11 @@
                 },
                 text: false
             });
+            exportButton.click(function () {
+                var win = window.open(settings.Service + '/ChatMessages/ExportHistory/'+id, '_blank');
+                win.focus();
+            });
+
             closeButton.click(function () {
                 var dialog = $(this).closest('.chat-dialog');
                 $(this).siblings(".user-information").slideToggle('fast', function () {
