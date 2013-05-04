@@ -67,8 +67,15 @@ namespace SharepointMessenger.Repositories
             var spGroup = SPContext.Current.Web.SiteGroups[group.Name];
             Contact result = null;
             var spUser = spGroup.Users.Cast<SPUser>().FirstOrDefault(u => u.ID == id);
+            var item = SPContext.Current.Web.SiteUserInfoList.Items.GetItemById(spUser.ID);
+
             if (spUser != null)
-                result = new Contact() { ID = spUser.ID, Name = spUser.Name, Username = spUser.LoginName };
+            {
+                string imageUrl = "/_layouts/images/person.gif";
+                if (item["Picture"] != null)
+                    imageUrl = item["Picture"].ToString().Replace(",", "");
+                result = new Contact() { ID = spUser.ID, Name = spUser.Name, Username = spUser.LoginName, ImageUrl = imageUrl };
+            }
             return result;
         }
 
@@ -131,6 +138,7 @@ namespace SharepointMessenger.Repositories
             SPItem item = list.Items.Add(conversation.Folder.ServerRelativeUrl, SPFileSystemObjectType.File, message.Title);
             item[ChatMessageFields.Title] = message.Title;
             item[ChatMessageFields.Message] = message.Message;
+            item[ChatMessageFields.IsRead] = false;
             SPFieldLookupValueCollection receivers = new SPFieldLookupValueCollection();
             foreach (Contact c in message.Receivers)
                 receivers.Add(new SPFieldLookupValue(c.ID, null));
@@ -185,23 +193,30 @@ namespace SharepointMessenger.Repositories
             SPList list = Config.GetList(SPContext.Current.Web);
             SPQuery query = new SPQuery();
             StringBuilder builder = new StringBuilder();
-            builder.Append("<Where><And>");
-            builder.AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "1");
+            builder.Append("<Where>");
 
+            // ok so if the owner is the receive is current user, it's read and the sender is created by then return as old
+            // else well, opposite, the current user should see all messages as old.
             builder.Append("<Or>");
             builder
                 .Append("<And>")
-                .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, userID)
-                .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, senderID)
+                    .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "1")
+                    .Append("<And>")
+                        .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, userID)
+                        .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, senderID)
+                    .Append("</And>")
                 .Append("</And>");
             builder
                 .Append("<And>")
-                .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, senderID)
-                .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, userID)
+                    .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "0")
+                    .Append("<And>")
+                        .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, senderID)
+                        .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, userID)
+                    .Append("</And>")
                 .Append("</And>");
             builder.Append("</Or>");
 
-            builder.Append("</And></Where><OrderBy><FieldRef Name='Created' Ascending='FALSE' /></OrderBy>");
+            builder.Append("</Where><OrderBy><FieldRef Name='Created' Ascending='FALSE' /></OrderBy>");
             query.Query = builder.ToString();
             query.ViewFields = string.Format(
                 "<FieldRef Name='{0}' /><FieldRef Name='{1}' /><FieldRef Name='{2}' /><FieldRef Name='{3}' /><FieldRef Name='{4}' />",

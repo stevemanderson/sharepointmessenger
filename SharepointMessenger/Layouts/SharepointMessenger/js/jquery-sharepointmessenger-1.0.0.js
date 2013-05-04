@@ -89,6 +89,9 @@
                 DataSource: service,
                 All: function (callback, params, onfail) {
                     this.DataSource.Send('get', 'Contacts', {}, callback, params, onfail);
+                },
+                GetContactInfoByID: function (id, callback, params, onfail) {
+                    this.DataSource.Send('post', 'Contacts/ContactInfoByID', { "id": id }, callback, params, onfail);
                 }
             },
             ChatMessages: {
@@ -121,9 +124,18 @@
         }
 
         function ResizeDialog(event, ui) {
-            var messages = $(this).find('.messages').parent();
-            messages.css('height', messages.parent().height() - 70);
-            var text = $(this).find('textarea');
+            Resize($(this));
+        }
+
+        function Resize(obj) {
+            var messages = obj.find('.messages').parent();
+            var hDelta = 70;
+            var info = obj.find('.user-information');
+            if (info.is(':visible')) {
+                hDelta = hDelta + 80;
+            }
+            messages.css('height', messages.parent().height() - hDelta);
+            var text = obj.find('textarea');
             var totalWidthAvailable = text.parent().width();
             text.css('width', (totalWidthAvailable - 60) + 'px');
         }
@@ -251,6 +263,56 @@
                 });
         }
 
+        function GetUserInformation(id) {
+            var info = $('<div class="information"></div>');
+            var closeButton = $('<button class="visible-toggle"></button>');
+            var userInfo = $('<div class="user-information"></div>');
+            var img = $('<img src="/_layouts/SharepointMessenger/images/loader-50x50.gif" alt="User Image" />');
+            var name = $('<span class="name"></span>');
+            var emailaddress = $('<span class="emailaddress"></span>');
+            userInfo.append(img);
+            var internalinfo = $('<div class="info"></div>');
+            internalinfo.append(name);
+            internalinfo.append(emailaddress);
+            userInfo.append(internalinfo);
+            var dialog = $(this).closest('.chat-dialog');
+            closeButton.button({
+                icons: {
+                    primary: "ui-icon-arrow-1-nw"
+                },
+                text: false
+            });
+            closeButton.click(function () {
+                var dialog = $(this).closest('.chat-dialog');
+                $(this).next().slideToggle('slow', function () {
+                    if ($(this).is(':visible')) {
+                        $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-nw"} });
+                    }
+                    else {
+                        $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-se"} });
+                    }
+                    Resize(dialog);
+                });
+            });
+            info.append(closeButton);
+            info.append(userInfo);
+
+            // get the user data
+            Repository.Contacts.GetContactInfoByID(
+                id,
+                function (xhr) {
+                    var obj = jQuery.parseJSON(xhr.responseText);
+                    img.attr('src', obj.ImageUrl);
+                    name.html(obj.Name);
+                    emailaddress.html(obj.EmailAddress);
+                },
+                { "ContactID": id },
+                function (xmlhttp, params) {
+                    alert(xmlhttp.statusText);
+                });
+            return info;
+        }
+
         function SelectUser() {
             var id = $(this).attr('data-id');
             $(this).find('span').html('0');
@@ -261,8 +323,12 @@
             if (found) return;
             var o = { "ID": id, "Dialog": '#chat-dialog-' + id };
             chats.push(o);
-            self.append($('<div class="chat-dialog" id="chat-dialog-' + id + '" style="overflow:hidden"><div class="message-container"><ul class="messages"></ul></div><div class="control-container"><textarea data-id="' + id + '"></textarea><button class="send">Send</button></div></div>'));
-            self.find('button').click(ButtonClick);
+            var chatDialog = $('<div class="chat-dialog" id="chat-dialog-' + id + '" style="overflow:hidden"></div>');
+            var msgContainer = $('<div class="message-container"><ul class="messages"></ul></div><div class="control-container"><textarea data-id="' + id + '"></textarea><button class="send">Send</button></div>');
+            chatDialog.append(GetUserInformation(id));
+            chatDialog.append(msgContainer);
+            self.append(chatDialog);
+            self.find('.send').click(ButtonClick);
             self.find('textarea').keypress(KeyPress);
             $(o.Dialog).dialog({
                 title: 'Chatting with ' + $(this).find('a').html(),

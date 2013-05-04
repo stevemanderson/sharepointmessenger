@@ -12,6 +12,10 @@ namespace SharepointMessenger.WebServices
         ChatContactServiceView[] ListContacts();
 
         [OperationContract]
+        [WebInvoke(UriTemplate = "Contacts/ContactInfoByID", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        ContactMessageInfoView GetContactInfoByID(int id);
+
+        [OperationContract]
         [WebInvoke(UriTemplate = "ChatMessages/Create", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         void CreateChatMessage(ChatMessageServiceView message);
 
@@ -35,6 +39,22 @@ namespace SharepointMessenger.WebServices
         public int ID { get; set; }
         [DataMember]
         public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class ContactMessageInfoView
+    {
+        [DataMember]
+        public int ID { get; set; }
+
+        [DataMember]
+        public string Name { get; set; }
+
+        [DataMember]
+        public string ImageUrl { get; set; }
+
+        [DataMember]
+        public string EmailAddress { get; set; }
     }
 
     [DataContract]

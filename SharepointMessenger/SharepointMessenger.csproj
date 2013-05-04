@@ -385,6 +385,7 @@
     <Content Include="Layouts\SharepointMessenger\css\vantage\images\ui-icons_888888_256x240.png" />
     <Content Include="Layouts\SharepointMessenger\css\vantage\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Layouts\SharepointMessenger\css\vantage\jquery-ui-1.10.2.custom.min.css" />
+    <Content Include="Layouts\SharepointMessenger\images\loader-50x50.gif" />
     <Content Include="Layouts\SharepointMessenger\images\loader.gif" />
     <Content Include="Layouts\SharepointMessenger\js\jquery-sharepointmessenger-1.0.0.js" />
     <Content Include="Layouts\SharepointMessenger\js\jquery-ui-1.10.2.custom.min.js" />
