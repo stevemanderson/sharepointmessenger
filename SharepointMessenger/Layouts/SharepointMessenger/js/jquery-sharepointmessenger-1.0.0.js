@@ -174,7 +174,7 @@
 
         function Resize(obj) {
             var messages = obj.find('.messages').parent();
-            var hDelta = 70;
+            var hDelta = 90;
             var info = obj.find('.user-information');
             if (info.is(':visible')) {
                 hDelta = hDelta + 80;
@@ -310,7 +310,8 @@
 
         function GetUserInformation(id) {
             var info = $('<div class="information"></div>');
-            var closeButton = $('<button class="visible-toggle"></button>');
+            var closeButton = $('<button class="visible-toggle">Toggle User Information</button>');
+            var exportButton = $('<button class="export">Export Message History</button>');
             var userInfo = $('<div class="user-information ui-widget-header"></div>');
             var img = $('<img src="/_layouts/SharepointMessenger/images/loader-50x50.gif" alt="User Image" />');
             var name = $('<span class="name"></span>');
@@ -334,24 +335,32 @@
                 icons: {
                     primary: icon
                 },
+                text:false 
+            });
+            exportButton.button({
+                icons: {
+                    primary: "ui-icon-copy"
+                },
                 text: false
             });
             closeButton.click(function () {
                 var dialog = $(this).closest('.chat-dialog');
-                $(this).next().slideToggle('fast', function () {
+                $(this).siblings(".user-information").slideToggle('fast', function () {
                     if ($(this).is(':visible')) {
                         COOKIE.ShowUserInformation = 1;
-                        $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-nw"} });
+                        $(this).siblings('.visible-toggle').button({ icons: { primary: "ui-icon-arrow-1-nw"} });
                     }
                     else {
                         COOKIE.ShowUserInformation = 0;
-                        $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-se"} });
+                        $(this).siblings('.visible-toggle').button({ icons: { primary: "ui-icon-arrow-1-se"} });
                     }
                     COOKIE.set(1);
                     Resize(dialog);
                 });
             });
             info.append(closeButton);
+            info.append(exportButton);
+            info.append('<div style="clear:both"></div>');
             info.append(userInfo);
 
             // get the user data
