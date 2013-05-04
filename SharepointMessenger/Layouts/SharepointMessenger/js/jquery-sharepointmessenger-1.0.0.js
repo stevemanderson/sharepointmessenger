@@ -1,6 +1,5 @@
 ﻿(function ($) {
 
-
     function cleanHTML(value) {
         var temp = document.createElement("div");
         temp.innerHTML = value;
@@ -23,6 +22,52 @@
         settings = $.extend({
             FormDigest: digestId
         }, settings);
+
+        var COOKIE = {
+            Loaded: false,
+            ShowUserInformation: 1,
+            Name: "SharepointMessenger",
+            Value: function () {
+                var arr = [];
+                arr.push(this.ShowUserInformation);
+                return arr.join('|');
+            },
+            parseString: function (str) {
+                var arr = str.split('|');
+                this.ShowUserInformation = arr[0];
+            },
+            loadCookie: function () {
+                var cookies = document.cookie.replace(' ', '').split(';');
+                var cookie = { "Name": "", "Value": "" };
+                for (var i = 0; i < cookies.length; ++i) {
+                    var s = cookies[i].split('=');
+                    if (s.length > 1) {
+                        if (s[0] == this.Name) {
+                            this.parseString(s[1]);
+                            this.Loaded = true;
+                            break;
+                        }
+                    }
+                }
+            },
+            exists: function () {
+                return this.Loaded;
+            },
+            set: function (days) {
+                var date = new Date();
+                date.setDate(date.getDate() + days);
+                var value = escape(this.Value()) + ((days == null) ? "" : "; expires=" + date.toUTCString());
+                document.cookie = this.Name + "=" + value;
+            },
+            remove: function () {
+                document.cookie = this.Name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            }
+        };
+
+        COOKIE.loadCookie();
+        if (!COOKIE.exists()) {
+            COOKIE.set(1);
+        }
 
         function TopError(xmlhttp) {
             if (xmlhttp.status == 0) return;
@@ -276,9 +321,18 @@
             internalinfo.append(emailaddress);
             userInfo.append(internalinfo);
             var dialog = $(this).closest('.chat-dialog');
+            var icon = "ui-icon-arrow-1-nw";
+            if (COOKIE.ShowUserInformation == 1) {
+                icon = "ui-icon-arrow-1-nw";
+                userInfo.show();
+            }
+            else {
+                icon = "ui-icon-arrow-1-se";
+                userInfo.hide();
+            }
             closeButton.button({
                 icons: {
-                    primary: "ui-icon-arrow-1-nw"
+                    primary: icon
                 },
                 text: false
             });
@@ -286,11 +340,14 @@
                 var dialog = $(this).closest('.chat-dialog');
                 $(this).next().slideToggle('fast', function () {
                     if ($(this).is(':visible')) {
+                        COOKIE.ShowUserInformation = 1;
                         $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-nw"} });
                     }
                     else {
+                        COOKIE.ShowUserInformation = 0;
                         $(this).prev().button({ icons: { primary: "ui-icon-arrow-1-se"} });
                     }
+                    COOKIE.set(1);
                     Resize(dialog);
                 });
             });
