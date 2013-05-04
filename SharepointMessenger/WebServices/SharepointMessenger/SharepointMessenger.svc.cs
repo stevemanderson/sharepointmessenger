@@ -8,6 +8,8 @@ using System.Linq;
 using System;
 using System.ServiceModel.Web;
 using System.Threading;
+using System.Text;
+using System.IO;
 
 namespace SharepointMessenger.WebServices
 {
@@ -15,6 +17,29 @@ namespace SharepointMessenger.WebServices
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Required)]
     public class SharepointMessenger : ISharepointMessenger
     {
+        public System.IO.Stream ExportHistory(string SenderID)
+        {
+            StringBuilder result = new StringBuilder();
+            try
+            {
+                IChatMessageRepository repo = new ChatMessageRepository();
+                var messages = repo.GetConversationHistory(SPContext.Current.Web.CurrentUser.ID, Int32.Parse(SenderID));
+                result.Append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+                result.Append("<ChatMessages>");
+                foreach (ChatMessage msg in messages)
+                    result.Append(msg.GetXml());
+                result.Append("</ChatMessages>");
+            }
+            catch (Exception ex)
+            {
+                Config.WriteException(ex);
+                WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.CreateChatMessageError;
+            }
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/xml";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result.ToString()));;
+        }
+
         public ChatContactServiceView[] ListContacts()
         {
             ChatContactServiceView[] result = null;
@@ -251,3 +276,4 @@ namespace SharepointMessenger.WebServices
         }
     }
 }
+
