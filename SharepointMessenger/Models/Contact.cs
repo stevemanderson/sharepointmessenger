@@ -31,5 +31,11 @@ namespace SharepointMessenger.Models
             get { return _username; }
             set { _username = value; }
         }
+        private string _emailAddress;
+        public string EmailAddress
+        {
+            get { return _emailAddress; }
+            set { _emailAddress = value; }
+        }
     }
 }

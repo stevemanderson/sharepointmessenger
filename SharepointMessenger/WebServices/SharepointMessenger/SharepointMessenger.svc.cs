@@ -74,7 +74,7 @@ namespace SharepointMessenger.WebServices
                 {
                     ID = id,
                     ImageUrl = contact.ImageUrl,
-                    EmailAddress = "", //TODO: get the user's email address
+                    EmailAddress = contact.EmailAddress,
                     Name = contact.Name
                 };
             }

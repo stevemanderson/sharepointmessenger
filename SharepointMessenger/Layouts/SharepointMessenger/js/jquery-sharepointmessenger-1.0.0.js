@@ -339,6 +339,7 @@
             userInfo.append(img);
             var internalinfo = $('<div class="info"></div>');
             internalinfo.append(name);
+            internalinfo.append('<br/>');
             internalinfo.append(emailaddress);
             userInfo.append(internalinfo);
             var dialog = $(this).closest('.chat-dialog');

@@ -72,9 +72,12 @@ namespace SharepointMessenger.Repositories
             if (spUser != null)
             {
                 string imageUrl = "/_layouts/images/person.gif";
+                string emailAddress = "";
                 if (item["Picture"] != null)
                     imageUrl = item["Picture"].ToString().Replace(",", "");
-                result = new Contact() { ID = spUser.ID, Name = spUser.Name, Username = spUser.LoginName, ImageUrl = imageUrl };
+                if (item["ows_EMail"] != null)
+                    emailAddress = item["ows_EMail"].ToString();
+                result = new Contact() { ID = spUser.ID, Name = spUser.Name, Username = spUser.LoginName, ImageUrl = imageUrl, EmailAddress = emailAddress };
             }
             return result;
         }

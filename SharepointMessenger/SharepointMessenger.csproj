@@ -418,6 +418,7 @@
     </Content>
     <Content Include="Features\SharepointMessengerWebParts\SharepointMessengerWebParts.Template.xml">
       <DependentUpon>SharepointMessengerWebParts.feature</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Layouts\SharepointMessenger\js\jquery-1.9.1.min.js" />
     <Content Include="Layouts\SharepointMessenger\js\json2.js" />
