@@ -8,6 +8,8 @@ using System.Linq;
 using System;
 using System.ServiceModel.Web;
 using System.Threading;
+using System.Text;
+using System.IO;
 
 namespace SharepointMessenger.WebServices
 {
@@ -15,6 +17,29 @@ namespace SharepointMessenger.WebServices
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Required)]
     public class SharepointMessenger : ISharepointMessenger
     {
+        public System.IO.Stream ExportHistory(string SenderID)
+        {
+            StringBuilder result = new StringBuilder();
+            try
+            {
+                IChatMessageRepository repo = new ChatMessageRepository();
+                var messages = repo.GetConversationHistory(SPContext.Current.Web.CurrentUser.ID, Int32.Parse(SenderID));
+                result.Append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+                result.Append("<ChatMessages>");
+                foreach (ChatMessage msg in messages)
+                    result.Append(msg.GetXml());
+                result.Append("</ChatMessages>");
+            }
+            catch (Exception ex)
+            {
+                Config.WriteException(ex);
+                WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.CreateChatMessageError;
+            }
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/xml";
+            return new MemoryStream(Encoding.UTF8.GetBytes(result.ToString()));;
+        }
+
         public ChatContactServiceView[] ListContacts()
         {
             ChatContactServiceView[] result = null;
@@ -30,6 +55,34 @@ namespace SharepointMessenger.WebServices
                 Config.WriteException(ex);
                 WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                 WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.GetContactsError;
+            }
+            return result;
+        }
+
+        public ContactMessageInfoView GetContactInfoByID(int id)
+        {
+            ContactMessageInfoView result = null;
+            try
+            {
+                IGroupRepository repo = new GroupRepository();
+                IContactRepository contactRepo = new ContactRepository();
+                var group = repo.GetGroup(Language.SMUGroupName);
+                var contact = contactRepo.GetByID(group, id);
+                // TODO: update the exception here with a custom one that goes back to the user if the contact is null
+                // currently it will throw an exception but will just give generic error.
+                result = new ContactMessageInfoView()
+                {
+                    ID = id,
+                    ImageUrl = contact.ImageUrl,
+                    EmailAddress = contact.EmailAddress,
+                    Name = contact.Name
+                };
+            }
+            catch (Exception ex)
+            {
+                Config.WriteException(ex);
+                WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.GetMessagesError;
             }
             return result;
         }
@@ -52,6 +105,7 @@ namespace SharepointMessenger.WebServices
                 }
                 else
                 {
+                    Config.WriteException(new Exception(Language.AccessDenied));
                     WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.Unauthorized;
                     WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.UserNotValidated;
                 }
@@ -64,8 +118,82 @@ namespace SharepointMessenger.WebServices
             }
         }
 
-        // remember that the time on the server is not the same as the time on the 
-        // client, might want to send back the last time for the server
+        public ChatMessageListResult StartConversation(int SenderID)
+        {
+            WebOperationContext.Current.OutgoingResponse.Headers.Add("Cache-Control", "no-cache");
+            ChatMessageListResult result = null;
+            try
+            {
+                if (SPUtility.ValidateFormDigest())
+                {
+                    IChatMessageRepository repo = new ChatMessageRepository();
+                    // get the users timezone
+                    SPTimeZone zone = SPContext.Current.Web.RegionalSettings.TimeZone;
+                    if (SPContext.Current.Web.CurrentUser.RegionalSettings != null)
+                    {
+                        SPRegionalSettings rs = SPContext.Current.Web.CurrentUser.RegionalSettings;
+                        zone = rs.TimeZone;
+                    }
+
+                    var newItems = repo.GetUnReadByUserIDAndSenderID(SPContext.Current.Web.CurrentUser.ID, SenderID)
+                        .Select(m => new ChatMessageServiceView()
+                        {
+                            ID = m.ID,
+                            Created = (zone.UTCToLocalTime(m.Created)).ToString(),
+                            CreatedDateOnly = (zone.UTCToLocalTime(m.Created).Date).ToShortDateString(),
+                            CreatedTimeOnly = (zone.UTCToLocalTime(m.Created)).ToString("HH:mm"),
+                            CreatedBy = m.CreatedBy.Name,
+                            Message = m.Message,
+                            IsOld = false,
+                            Receivers = m.Receivers.Select(r => new ChatContactServiceView()
+                            {
+                                ID = r.ID,
+                                Name = r.Name,
+                                Username = r.Username.Split('\\').Last()
+                            }).ToArray()
+                        }).ToArray();
+
+                    var someOldItems = repo.GetLastByUserIDAndSenderID(SPContext.Current.Web.CurrentUser.ID, SenderID, 3)
+                        .Select(m => new ChatMessageServiceView()
+                        {
+                            ID = m.ID,
+                            Created = (zone.UTCToLocalTime(m.Created)).ToString(),
+                            CreatedDateOnly = (zone.UTCToLocalTime(m.Created).Date).ToShortDateString(),
+                            CreatedTimeOnly = (zone.UTCToLocalTime(m.Created)).ToString("HH:mm"),
+                            CreatedBy = m.CreatedBy.Name,
+                            Message = m.Message,
+                            IsOld = true,
+                            Receivers = m.Receivers.Select(r => new ChatContactServiceView()
+                            {
+                                ID = r.ID,
+                                Name = r.Name,
+                                Username = r.Username.Split('\\').Last()
+                            }).ToArray()
+                        }).ToArray();
+
+                    result = new ChatMessageListResult()
+                    {
+                        LastRequested = DateTime.Now.ToString(),
+                    };
+                    if (newItems.Length > 0)
+                        repo.SetChatMessagesRead(newItems.Select(i => i.ID).ToArray());
+                    result.ChatMessages = someOldItems.Concat(newItems).ToArray();
+                }
+                else
+                {
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.Unauthorized;
+                    WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.UserNotValidated;
+                }
+            }
+            catch (Exception ex)
+            {
+                Config.WriteException(ex);
+                WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.GetMessagesError;
+            }
+            return result;
+        }
+
         public ChatMessageListResult ChatMessages(int SenderID)
         {
             WebOperationContext.Current.OutgoingResponse.Headers.Add("Cache-Control", "no-cache");
@@ -148,3 +276,4 @@ namespace SharepointMessenger.WebServices
         }
     }
 }
+

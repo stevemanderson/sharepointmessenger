@@ -8,6 +8,10 @@
 <%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ContactListUserControl.ascx.cs" Inherits="SharepointMessenger.WebParts.ContactList.ContactListUserControl" %>
 <SharePoint:FormDigest runat="server"/>
 
+<!--[if lt IE 8]>
+    <div class='err'>This webpart requires ie8+ you may have compatibility mode set. Check your developer toolbar.</div>
+<![endif]-->
+
 <div id='sharepoint-messenger'></div>
 
 <link rel="Stylesheet" type="text/css" href="/_layouts/SharepointMessenger/css/<%= ThemeName %>/jquery-ui-1.10.2.custom.min.css" />
@@ -16,7 +20,7 @@
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/json2.js"></script>
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-1.9.1.min.js"></script>
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-ui-1.10.2.custom.min.js"></script>
-<script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-sharepointmessenger-1.0.0.js"></script>
+<script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-sharepointmessenger-1.0.1.js"></script>
 
 <script type="text/javascript">
     $('#sharepoint-messenger').sharepointmessenger({CurrentUsername:'<%= CurrentMessageUser %>', TimeZone:<%= UserTimeZone %>, MessageTimeOut: <%= MessageTimeOut %>, ShowContactImages: <%= ShowContactImages.ToString().ToLower() %> } );

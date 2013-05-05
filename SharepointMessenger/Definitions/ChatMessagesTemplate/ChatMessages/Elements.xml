@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <ListInstance Title="Chat Messages"
+                OnQuickLaunch="False"
+                TemplateType="10000"
+                Url="Lists/Chat Messages"
+                VersioningEnabled="false"
+                FeatureId="b433f0cd-f276-47c1-ba80-174a1e58be4d"
+                Description="Hold all chat messages for Sharepoint Messenger">
+  </ListInstance>
+</Elements>

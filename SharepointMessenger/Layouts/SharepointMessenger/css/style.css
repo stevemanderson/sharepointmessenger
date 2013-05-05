@@ -16,6 +16,44 @@
 #users li a { padding:5px 0px 5px 5px; float:left; }
 #users li span { padding:5px; float:right; font-weight:bold; font-size:8px; }
 
+.chat-dialog .information 
+{
+    position:relative;
+}
+
+.chat-dialog .information button 
+{
+    width:20px;
+    height:20px;
+    float:left;
+}
+
+.chat-dialog .user-information 
+{
+    min-width:300px;
+    height:80px;
+    border-left:1px solid #CCCCCC;
+    border-top:1px solid #CCCCCC;
+    border-right:1px solid #CCCCCC;
+}
+
+.chat-dialog .user-information img 
+{
+   border:1px solid #CCCCCC;
+   width:50px;
+   height:50px; 
+   display:block;
+   margin:15px 0 0 25px;
+   float:left;
+}
+
+.chat-dialog .user-information .info 
+{
+   float:left;
+   padding:20px 0 0 10px;
+   display:block;
+}
+
 .message-container
 {
     background:#FFFFFF;
@@ -25,8 +63,6 @@
     overflow-y:scroll;
     overflow-x:hide;
 }
-
-
 
 .control-container
 {
@@ -68,6 +104,8 @@
     padding:2px;
     margin:0 0 3px 0;
 }
+
+.message-container .messages .is-old { color:#CCCCCC; }
 
 .message-container .messages .message-sending { color:Blue; padding:0 0 0 10px; background:url(/_layouts/SharepointMessenger/images/loader.gif) 3px 5px no-repeat; }
 .message-container .messages .message-failed { color:Red; margin:0 0 3px 0; }

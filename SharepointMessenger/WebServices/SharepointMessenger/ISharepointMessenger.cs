@@ -12,8 +12,16 @@ namespace SharepointMessenger.WebServices
         ChatContactServiceView[] ListContacts();
 
         [OperationContract]
+        [WebInvoke(UriTemplate = "Contacts/ContactInfoByID", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        ContactMessageInfoView GetContactInfoByID(int id);
+
+        [OperationContract]
         [WebInvoke(UriTemplate = "ChatMessages/Create", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         void CreateChatMessage(ChatMessageServiceView message);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "ChatMessages/StartConversation", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        ChatMessageListResult StartConversation(int SenderID);
 
         [OperationContract]
         [WebInvoke(UriTemplate = "ChatMessages", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -22,6 +30,10 @@ namespace SharepointMessenger.WebServices
         [OperationContract]
         [WebInvoke(UriTemplate = "ChatMessages/PendingMessageCounts", Method = "GET", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         PendingMessageView[] PendingMessageCounts();
+
+        [OperationContract]
+        [WebGet(UriTemplate = "ChatMessages/ExportHistory/{SenderID}", BodyStyle = WebMessageBodyStyle.Bare)]
+        System.IO.Stream ExportHistory(string SenderID);
     }
 
     [DataContract]
@@ -31,6 +43,22 @@ namespace SharepointMessenger.WebServices
         public int ID { get; set; }
         [DataMember]
         public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class ContactMessageInfoView
+    {
+        [DataMember]
+        public int ID { get; set; }
+
+        [DataMember]
+        public string Name { get; set; }
+
+        [DataMember]
+        public string ImageUrl { get; set; }
+
+        [DataMember]
+        public string EmailAddress { get; set; }
     }
 
     [DataContract]
@@ -63,6 +91,8 @@ namespace SharepointMessenger.WebServices
         public string CreatedDateOnly { get; set; }
         [DataMember]
         public string CreatedTimeOnly { get; set; }
+        [DataMember]
+        public bool IsOld { get; set; }
     }
 
     [DataContract]

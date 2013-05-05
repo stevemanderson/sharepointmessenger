@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharepointMessenger.Extensions;
+using Microsoft.SharePoint.Utilities;
 
 namespace SharepointMessenger.Models
 {
@@ -23,8 +24,8 @@ namespace SharepointMessenger.Models
         private string _message;
         public string Message
         {
-            get { return _message; }
-            set { _message = value.CleanXSS(); }
+            get { return SPHttpUtility.HtmlDecode(_message); }
+            set { _message = SPHttpUtility.HtmlEncode(value); }
         }
         private Contact[] _receivers;
         public Contact[] Receivers
@@ -49,6 +50,25 @@ namespace SharepointMessenger.Models
         {
             get { return _isRead; }
             set { _isRead = value; }
+        }
+
+        public string GetXml()
+        {
+            StringBuilder result = new StringBuilder();
+            result.AppendFormat("<ChatMessage ID='{0}'>", this.ID);
+            result.AppendFormat("<{0}>{1}</{0}>", "Title", SPHttpUtility.HtmlEncode(this.Title));
+            result.AppendFormat("<{0}>{1}</{0}>", "Message", SPHttpUtility.HtmlEncode(this.Message));
+
+            result.Append("<Receivers>");
+            foreach(Contact receiver in this.Receivers)
+                result.AppendFormat("<{0} ID='{2}'>{1}</{0}>", "Receiver", SPHttpUtility.HtmlEncode(receiver.Name), receiver.ID);
+            result.Append("</Receivers>");
+
+            result.AppendFormat("<{0}>{1}</{0}>", "Created", this.Created);
+            result.AppendFormat("<{0} ID='{2}'>{1}</{0}>", "CreatedBy", SPHttpUtility.HtmlEncode(this.CreatedBy.Name), this.CreatedBy.ID);
+            result.AppendFormat("<{0}>{1}</{0}>", "IsRead", this.IsRead);
+            result.Append("</ChatMessage>");
+            return result.ToString();
         }
     }
 }

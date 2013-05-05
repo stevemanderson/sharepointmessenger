@@ -67,8 +67,18 @@ namespace SharepointMessenger.Repositories
             var spGroup = SPContext.Current.Web.SiteGroups[group.Name];
             Contact result = null;
             var spUser = spGroup.Users.Cast<SPUser>().FirstOrDefault(u => u.ID == id);
+            var item = SPContext.Current.Web.SiteUserInfoList.Items.GetItemById(spUser.ID);
+
             if (spUser != null)
-                result = new Contact() { ID = spUser.ID, Name = spUser.Name, Username = spUser.LoginName };
+            {
+                string imageUrl = "/_layouts/images/person.gif";
+                string emailAddress = "";
+                if (item["Picture"] != null)
+                    imageUrl = item["Picture"].ToString().Replace(",", "");
+                if (item["ows_EMail"] != null)
+                    emailAddress = item["ows_EMail"].ToString();
+                result = new Contact() { ID = spUser.ID, Name = spUser.Name, Username = spUser.LoginName, ImageUrl = imageUrl, EmailAddress = emailAddress };
+            }
             return result;
         }
 
@@ -100,16 +110,16 @@ namespace SharepointMessenger.Repositories
         ChatMessage[] GetUnReadByUserIDAndSenderID(int userID, int senderID);
         void SetChatMessagesRead(int[] ids);
         ChatMessage[] GetPendingMessageByUser(int id);
+        ChatMessage[] GetLastByUserIDAndSenderID(int userID, int senderID, uint number);
+        ChatMessage[] GetConversationHistory(int userID, int senderID);
     }
 
     public class ChatMessageRepository :
         IChatMessageRepository
     {
-        private string ListName { get { return Language.SMUListName; } }
-
         public ChatMessage GetByID(int id)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             SPItem item = list.Items.GetItemById(id);
             return new ChatMessage()
             {
@@ -123,7 +133,7 @@ namespace SharepointMessenger.Repositories
         {
             IContactRepository repo = new ContactRepository();
             var id = SPContext.Current.Web.CurrentUser.ID;
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             List<int> ids = message.Receivers.Select(r => r.ID).ToList();
             ids.Add(id);
             SPListItem conversation = Config.GetConversationFolder(list, ids.ToArray());
@@ -132,6 +142,7 @@ namespace SharepointMessenger.Repositories
             SPItem item = list.Items.Add(conversation.Folder.ServerRelativeUrl, SPFileSystemObjectType.File, message.Title);
             item[ChatMessageFields.Title] = message.Title;
             item[ChatMessageFields.Message] = message.Message;
+            item[ChatMessageFields.IsRead] = false;
             SPFieldLookupValueCollection receivers = new SPFieldLookupValueCollection();
             foreach (Contact c in message.Receivers)
                 receivers.Add(new SPFieldLookupValue(c.ID, null));
@@ -141,7 +152,7 @@ namespace SharepointMessenger.Repositories
 
         public void DeleteByID(int id)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             list.Items.DeleteItemById(id);
         }
 
@@ -152,7 +163,7 @@ namespace SharepointMessenger.Repositories
 
         public void SetChatMessagesRead(int[] ids)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             StringBuilder methodBuilder = new StringBuilder();
             string batch = string.Empty;
             string batchFormat = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -181,9 +192,109 @@ namespace SharepointMessenger.Repositories
             });
         }
 
+        public ChatMessage[] GetLastByUserIDAndSenderID(int userID, int senderID, uint number)
+        {
+            SPList list = Config.GetList(SPContext.Current.Web);
+            SPQuery query = new SPQuery();
+            StringBuilder builder = new StringBuilder();
+            builder.Append("<Where>");
+
+            // ok so if the owner is the receive is current user, it's read and the sender is created by then return as old
+            // else well, opposite, the current user should see all messages as old.
+            builder.Append("<Or>");
+            builder
+                .Append("<And>")
+                    .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "1")
+                    .Append("<And>")
+                        .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, userID)
+                        .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, senderID)
+                    .Append("</And>")
+                .Append("</And>");
+            builder
+                .Append("<And>")
+                    .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "0")
+                    .Append("<And>")
+                        .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, senderID)
+                        .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, userID)
+                    .Append("</And>")
+                .Append("</And>");
+            builder.Append("</Or>");
+
+            builder.Append("</Where><OrderBy><FieldRef Name='Created' Ascending='FALSE' /></OrderBy>");
+            query.Query = builder.ToString();
+            query.ViewFields = string.Format(
+                "<FieldRef Name='{0}' /><FieldRef Name='{1}' /><FieldRef Name='{2}' /><FieldRef Name='{3}' /><FieldRef Name='{4}' />",
+                "ID", ChatMessageFields.Message, ChatMessageFields.Receivers, ChatMessageFields.Created, ChatMessageFields.CreatedBy);
+            query.ViewFieldsOnly = true;
+            query.DatesInUtc = true;
+            query.ViewAttributes = "Scope=\"RecursiveAll\"";
+            query.RowLimit = number;
+
+            var items = list.GetItems(query);
+            List<ChatMessage> result = new List<ChatMessage>();
+
+            foreach (SPItem item in items)
+            {
+                var cm = new ChatMessage();
+                cm.Created = (DateTime)item[ChatMessageFields.Created];
+                var createdBy = item[ChatMessageFields.CreatedBy].ToString().Replace("#", "");
+                cm.CreatedBy = new Contact() { ID = Int32.Parse(createdBy.Split(';')[0]), Name = createdBy.Split(';')[1], Username = "" };
+                cm.ID = item.ID;
+                cm.Message = (item[ChatMessageFields.Message] != null) ? item[ChatMessageFields.Message].ToString() : "";
+                SPFieldUserValueCollection receivers = item[ChatMessageFields.Receivers] as SPFieldUserValueCollection;
+                cm.Receivers = receivers.Cast<SPFieldUserValue>().Select(l => new Contact() { ID = l.LookupId, Name = l.User.Name, Username = l.User.LoginName }).ToArray();
+                result.Add(cm);
+            }
+            return result.OrderBy(i => i.Created).ToArray();
+        }
+
+        public ChatMessage[] GetConversationHistory(int userID, int senderID)
+        {
+            SPList list = Config.GetList(SPContext.Current.Web);
+            SPQuery query = new SPQuery();
+            StringBuilder builder = new StringBuilder();
+            builder.Append("<Where>");
+            builder.Append("<Or>");
+            builder
+                .Append("<And>")
+                    .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, userID)
+                    .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, senderID)
+                .Append("</And>");
+            builder
+                .Append("<And>")
+                    .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, senderID)
+                    .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, userID)
+                .Append("</And>");
+            builder.Append("</Or>");
+            builder.Append("</Where>");
+            query.Query = builder.ToString();
+            query.ViewFields = string.Format(
+                "<FieldRef Name='{0}' /><FieldRef Name='{1}' /><FieldRef Name='{2}' /><FieldRef Name='{3}' /><FieldRef Name='{4}' />",
+                "ID", ChatMessageFields.Message, ChatMessageFields.Receivers, ChatMessageFields.Created, ChatMessageFields.CreatedBy);
+            query.ViewFieldsOnly = true;
+            query.DatesInUtc = true;
+            query.ViewAttributes = "Scope=\"RecursiveAll\"";
+            var items = list.GetItems(query);
+            List<ChatMessage> result = new List<ChatMessage>();
+
+            foreach (SPItem item in items)
+            {
+                var cm = new ChatMessage();
+                cm.Created = (DateTime)item[ChatMessageFields.Created];
+                var createdBy = item[ChatMessageFields.CreatedBy].ToString().Replace("#", "");
+                cm.CreatedBy = new Contact() { ID = Int32.Parse(createdBy.Split(';')[0]), Name = createdBy.Split(';')[1], Username = "" };
+                cm.ID = item.ID;
+                cm.Message = (item[ChatMessageFields.Message] != null) ? item[ChatMessageFields.Message].ToString() : "";
+                SPFieldUserValueCollection receivers = item[ChatMessageFields.Receivers] as SPFieldUserValueCollection;
+                cm.Receivers = receivers.Cast<SPFieldUserValue>().Select(l => new Contact() { ID = l.LookupId, Name = l.User.Name, Username = l.User.LoginName }).ToArray();
+                result.Add(cm);
+            }
+            return result.OrderBy(i => i.Created).ToArray();
+        }
+
         public ChatMessage[] GetUnReadByUserIDAndSenderID(int userID, int senderID)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             SPQuery query = new SPQuery();
             StringBuilder builder = new StringBuilder();
             builder.Append("<Where><And>");
@@ -194,7 +305,7 @@ namespace SharepointMessenger.Repositories
                 .Append("</And>");
             builder
                 .Append("<Or>")
-                .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Boolean'>{1}</Value></Eq>", ChatMessageFields.IsRead, "FALSE")
+                .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "0")
                 .AppendFormat("<IsNull><FieldRef Name='{0}' /></IsNull>", ChatMessageFields.IsRead)
                 .Append("</Or>");
             builder.Append("</And></Where>");
@@ -225,7 +336,7 @@ namespace SharepointMessenger.Repositories
 
         public ChatMessage[] GetPendingMessageByUser(int id)
         {
-            SPList list = SPContext.Current.Web.Lists[ListName];
+            SPList list = Config.GetList(SPContext.Current.Web);
             SPQuery query = new SPQuery();
             StringBuilder builder = new StringBuilder();
             builder.Append("<Where><And>");
