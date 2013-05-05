@@ -7,6 +7,11 @@
         return sanitized;
     }
 
+    function html5Supported() {
+        var elem = document.createElement('canvas');
+        return !!(elem.getContext && elem.getContext('2d'));
+    }
+
     $.fn.sharepointmessenger = function (options) {
         var chats = [];
         var self = this;
@@ -26,15 +31,18 @@
         var COOKIE = {
             Loaded: false,
             ShowUserInformation: 1,
+            HTML5: 0,
             Name: "SharepointMessenger",
             Value: function () {
                 var arr = [];
-                arr.push(this.ShowUserInformation);
+                arr.push(escape(this.ShowUserInformation));
+                arr.push(escape(this.HTML5));
                 return arr.join('|');
             },
             parseString: function (str) {
                 var arr = str.split('|');
                 this.ShowUserInformation = arr[0];
+                this.HTML5 = arr[1];
             },
             loadCookie: function () {
                 var cookies = document.cookie.replace(' ', '').split(';');
@@ -56,7 +64,8 @@
             set: function (days) {
                 var date = new Date();
                 date.setDate(date.getDate() + days);
-                var value = escape(this.Value()) + ((days == null) ? "" : "; expires=" + date.toUTCString());
+                var value = this.Value() + ((days == null) ? "" : "; expires=" + date.toUTCString());
+                console.log(value);
                 document.cookie = this.Name + "=" + value;
             },
             remove: function () {
@@ -65,7 +74,13 @@
         };
 
         COOKIE.loadCookie();
+
         if (!COOKIE.exists()) {
+            COOKIE.set(1);
+        }
+
+        if (html5Supported()) {
+            COOKIE.HTML5 = 1;
             COOKIE.set(1);
         }
 
@@ -296,7 +311,9 @@
                     }
                 }
                 if (found) return;
-                var count = $('#users li[data-id=' + o.ID + '] span');
+                var li = $('#users li[data-id=' + o.ID + ']');
+                li.addClass('ui-widget-header');
+                var count = li.find('span');
                 count.html(o.Count);
             });
             setTimeout(function () { GetUserMessageCounts(); }, settings.MessageTimeOut);
@@ -347,7 +364,7 @@
                 text: false
             });
             exportButton.click(function () {
-                var win = window.open(settings.Service + '/ChatMessages/ExportHistory/'+id, '_blank');
+                var win = window.open(settings.Service + '/ChatMessages/ExportHistory/' + id, '_blank');
                 win.focus();
             });
 
@@ -389,6 +406,7 @@
 
         function SelectUser() {
             var id = $(this).attr('data-id');
+            $(this).removeClass('ui-widget-header');
             $(this).find('span').html('0');
             var found = false;
             for (var i = 0; i < chats.length; ++i) {
