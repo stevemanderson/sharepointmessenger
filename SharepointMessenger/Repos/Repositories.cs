@@ -212,7 +212,7 @@ namespace SharepointMessenger.Repositories
                 .Append("</And>");
             builder
                 .Append("<And>")
-                    .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "0")
+                    .AppendFormat("<Eq><FieldRef Name='{0}' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.IsRead, "1")
                     .Append("<And>")
                         .AppendFormat("<Contains><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Contains>", ChatMessageFields.Receivers, senderID)
                         .AppendFormat("<Eq><FieldRef Name='{0}' LookupId='TRUE' /><Value Type='Integer'>{1}</Value></Eq>", ChatMessageFields.CreatedBy, userID)
