@@ -41,13 +41,29 @@ namespace SharepointMessenger.Repositories
     public interface IContactRepository
     {
         Contact GetByID(Group group, int id);
-        Contact[] GetAllFromGroup(Group group);
+        Contact[] GetAllFromGroup(Group group, int messageTimeOut);
         SPRoleAssignment CreateRoleAssignment(string groupName, int userID);
+        void SetContactOnline(string groupName, int id);
     }
 
     public class ContactRepository :
         IContactRepository
     {
+        public void SetContactOnline(string groupName, int id)
+        {
+            var spGroup = SPContext.Current.Web.SiteGroups[groupName];
+            var spUser = spGroup.Users.Cast<SPUser>().FirstOrDefault(u => u.ID == id);
+            var item = SPContext.Current.Web.SiteUserInfoList.Items.GetItemById(spUser.ID);
+            if (spUser != null)
+            {
+                if (item.Properties.ContainsKey(Language.OnlineStatus))
+                    item.Properties[Language.OnlineStatus] = DateTime.Now;
+                else
+                    item.Properties.Add(Language.OnlineStatus, DateTime.Now);
+                item.Update();
+            }
+        }
+
         public SPRoleAssignment CreateRoleAssignment(string groupName, int userID)
         {
             SPRoleAssignment ass = null;
@@ -82,7 +98,7 @@ namespace SharepointMessenger.Repositories
             return result;
         }
 
-        public Contact[] GetAllFromGroup(Group group)
+        public Contact[] GetAllFromGroup(Group group, int messageTimeOut)
         {
             var spGroup = SPContext.Current.Web.SiteGroups[group.Name];
             var currentId = SPContext.Current.Web.CurrentUser.ID;
@@ -96,6 +112,15 @@ namespace SharepointMessenger.Repositories
                     user.ImageUrl = "/_layouts/images/person.gif";
                 else
                     user.ImageUrl = item["Picture"].ToString().Replace(",", "");
+
+                DateTime lastOnline = DateTime.MinValue;
+                if (item.Properties.ContainsKey(Language.OnlineStatus))
+                    lastOnline = (DateTime)item.Properties[Language.OnlineStatus];
+                
+                // check the online time
+                TimeSpan span = DateTime.Now - lastOnline;
+                // give 5 seconds for loading
+                user.IsOnline = span.TotalMilliseconds < (messageTimeOut+5000);
             }
             return list;
         }

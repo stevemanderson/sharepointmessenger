@@ -147,6 +147,9 @@
   <data name="LoggingCategory" xml:space="preserve">
     <value>Sharepoint Messenger</value>
   </data>
+  <data name="OnlineStatus" xml:space="preserve">
+    <value>sm_onlinestatus</value>
+  </data>
   <data name="SMUChatMessage" xml:space="preserve">
     <value>Chat Message</value>
   </data>

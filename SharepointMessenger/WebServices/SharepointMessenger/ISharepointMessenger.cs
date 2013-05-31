@@ -8,8 +8,8 @@ namespace SharepointMessenger.WebServices
     public interface ISharepointMessenger
     {
         [OperationContract]
-        [WebInvoke(UriTemplate = "Contacts", Method = "GET", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        ChatContactServiceView[] ListContacts();
+        [WebInvoke(UriTemplate = "Contacts", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        ChatContactServiceView[] ListContacts(int messageTimeOut);
 
         [OperationContract]
         [WebInvoke(UriTemplate = "Contacts/ContactInfoByID", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -28,8 +28,8 @@ namespace SharepointMessenger.WebServices
         ChatMessageListResult ChatMessages(int SenderID);
 
         [OperationContract]
-        [WebInvoke(UriTemplate = "ChatMessages/PendingMessageCounts", Method = "GET", BodyStyle = WebMessageBodyStyle.Bare, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        PendingMessageView[] PendingMessageCounts();
+        [WebInvoke(UriTemplate = "ChatMessages/PendingMessageCounts", Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        PendingMessageView[] PendingMessageCounts(int messageTimeOut);
 
         [OperationContract]
         [WebGet(UriTemplate = "ChatMessages/ExportHistory/{SenderID}", BodyStyle = WebMessageBodyStyle.Bare)]
@@ -41,6 +41,8 @@ namespace SharepointMessenger.WebServices
     {
         [DataMember]
         public int ID { get; set; }
+        [DataMember]
+        public bool IsOnline { get; set; }
         [DataMember]
         public int Count { get; set; }
     }

@@ -148,7 +148,7 @@
             Contacts: {
                 DataSource: service,
                 All: function (callback, params, onfail) {
-                    this.DataSource.Send('get', 'Contacts', {}, callback, params, onfail);
+                    this.DataSource.Send('post', 'Contacts', { "messageTimeOut": settings.MessageTimeOut }, callback, params, onfail);
                 },
                 GetContactInfoByID: function (id, callback, params, onfail) {
                     this.DataSource.Send('post', 'Contacts/ContactInfoByID', { "id": id }, callback, params, onfail);
@@ -166,7 +166,7 @@
                     this.DataSource.Send('post', 'ChatMessages', { "SenderID": id }, callback, params, onfail);
                 },
                 GetPendingMessageCounts: function (callback, params, onfail) {
-                    this.DataSource.Send('get', 'ChatMessages/PendingMessageCounts', {}, callback, params, onfail);
+                    this.DataSource.Send('post', 'ChatMessages/PendingMessageCounts', { "messageTimeOut": settings.MessageTimeOut }, callback, params, onfail);
                 },
                 ExportHistory: function (id, callback, params, onfail) {
                     this.DataSource.Send('post', 'ChatMessages/ExportHistory', { "SenderID": id }, callback, params, onfail);
@@ -310,10 +310,24 @@
                         found = true;
                     }
                 }
-                if (found) return;
+
+                // get all the online statuses
                 var li = $('#users li[data-id=' + o.ID + ']');
-                li.addClass('ui-widget-header');
+
+                if (o.IsOnline) {
+                    li.addClass('online');
+                }
+                else {
+                    li.removeClass('online');
+                }
+
+                if (found) return;
+
+
                 var count = li.find('span');
+                if (count > 0) {
+                    li.addClass('ui-widget-header');
+                }
                 count.html(o.Count);
             });
             setTimeout(function () { GetUserMessageCounts(); }, settings.MessageTimeOut);

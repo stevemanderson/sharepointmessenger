@@ -111,3 +111,4 @@
 .message-container .messages .message-failed { color:Red; margin:0 0 3px 0; }
 .err { color:#CC0000; border:1px solid #F6358A; background:#CCAAAA; padding:10px; }
 .err span { }
+.online { background:#BBEEBB; color:#192020; border:1px solid #33EE33; }

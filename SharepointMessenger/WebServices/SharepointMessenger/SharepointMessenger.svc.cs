@@ -40,7 +40,7 @@ namespace SharepointMessenger.WebServices
             return new MemoryStream(Encoding.UTF8.GetBytes(result.ToString()));;
         }
 
-        public ChatContactServiceView[] ListContacts()
+        public ChatContactServiceView[] ListContacts(int messageTimeOut)
         {
             ChatContactServiceView[] result = null;
             try
@@ -48,7 +48,7 @@ namespace SharepointMessenger.WebServices
                 IGroupRepository repo = new GroupRepository();
                 IContactRepository contactRepo = new ContactRepository();
                 var group = repo.GetGroup(Language.SMUGroupName);
-                result = contactRepo.GetAllFromGroup(group).Select(c => new ChatContactServiceView() { ImageUrl = c.ImageUrl, ID = c.ID, Username = c.Username.Split('\\').Last(), Name = c.Name }).OrderBy(u => u.Name).ToArray();
+                result = contactRepo.GetAllFromGroup(group, messageTimeOut).Select(c => new ChatContactServiceView() { ImageUrl = c.ImageUrl, ID = c.ID, Username = c.Username.Split('\\').Last(), Name = c.Name }).OrderBy(u => u.Name).ToArray();
             }
             catch (Exception ex)
             {
@@ -248,23 +248,53 @@ namespace SharepointMessenger.WebServices
             return result;
         }
 
-        public PendingMessageView[] PendingMessageCounts()
+        public PendingMessageView[] PendingMessageCounts(int messageTimeOut)
         {
             WebOperationContext.Current.OutgoingResponse.Headers.Add("Cache-Control", "no-cache");
             PendingMessageView[] result = new PendingMessageView[0];
             try
             {
-                IChatMessageRepository repo = new ChatMessageRepository();
-                var messages = repo.GetPendingMessageByUser(SPContext.Current.Web.CurrentUser.ID);
-                if (messages.Count() == 0)
-                    return result;
-                result = (from m in messages
-                          group m by m.CreatedBy.ID into g
-                          select new PendingMessageView()
-                             {
-                                 ID = g.Key,
-                                 Count = g.Count()
-                             }).ToArray();
+                if (SPUtility.ValidateFormDigest())
+                {
+                    // set the current user to online
+                    IContactRepository crepo = new ContactRepository();
+                    crepo.SetContactOnline(Language.SMUGroupName, SPContext.Current.Web.CurrentUser.ID);
+                    
+                    // get the user statuses
+                    IGroupRepository grepo = new GroupRepository();
+                    var group = grepo.GetGroup(Language.SMUGroupName);
+                    var contactList = crepo.GetAllFromGroup(group, messageTimeOut);
+
+                    // get the pending messages
+                    IChatMessageRepository repo = new ChatMessageRepository();
+                    var messages = repo.GetPendingMessageByUser(SPContext.Current.Web.CurrentUser.ID);
+
+                    result = (from m in messages
+                              group m by m.CreatedBy.ID into g
+                              select new PendingMessageView()
+                              {
+                                  ID = g.Key,
+                                  IsOnline = false,
+                                  Count = g.Count()
+                              }).ToArray();
+
+                    // get the pending information
+                    result = (from i in contactList
+                              where i.ID != SPContext.Current.Web.CurrentUser.ID
+                              select new PendingMessageView()
+                              {
+                                  ID = i.ID,
+                                  IsOnline = i.IsOnline,
+                                  Count = 
+                                    (result.Any(p => p.ID == i.ID) ?
+                                        result.First(p => p.ID == i.ID).Count : 0)
+                              }).ToArray();
+                }
+                else
+                {
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.Unauthorized;
+                    WebOperationContext.Current.OutgoingResponse.StatusDescription = Language.UserNotValidated;
+                }
             }
             catch (Exception ex)
             {
