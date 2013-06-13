@@ -11,6 +11,8 @@ namespace SharepointMessenger.WebParts.ContactList
     {
         public int MessageTimeOut { set; get; }
         public bool ShowContactImages { set; get; }
+        public string DefaultSite { set; get; }
+
         protected string ThemeName
         {
             get 

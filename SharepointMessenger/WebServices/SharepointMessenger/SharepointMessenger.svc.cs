@@ -43,6 +43,7 @@ namespace SharepointMessenger.WebServices
         public ChatContactServiceView[] ListContacts(int messageTimeOut)
         {
             ChatContactServiceView[] result = null;
+            WebOperationContext.Current.OutgoingResponse.Headers.Add("Cache-Control", "no-cache");
             try
             {
                 IGroupRepository repo = new GroupRepository();

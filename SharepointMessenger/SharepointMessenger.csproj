@@ -62,6 +62,9 @@
     <Compile Include="Features\SharepointMessengerList\SharepointMessengerList.EventReceiver.cs">
       <DependentUpon>SharepointMessengerList.feature</DependentUpon>
     </Compile>
+    <Compile Include="Features\SharepointMessengerWebParts\SharepointMessengerWebParts.EventReceiver.cs">
+      <DependentUpon>SharepointMessengerWebParts.feature</DependentUpon>
+    </Compile>
     <Compile Include="Language.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -96,10 +99,10 @@
       <SharePointProjectItemId>{8ba8a6f8-3cfe-4fd1-a001-087d01b6c03b}</SharePointProjectItemId>
     </None>
     <None Include="Definitions\ChatMessagesTemplate\ChatMessages\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{7356675c-e27b-4abe-a14d-abee57c5046e}</SharePointProjectItemId>
+      <SharePointProjectItemId>{10057517-d584-4b67-a669-d8867b052481}</SharePointProjectItemId>
     </None>
     <None Include="Definitions\ChatMessagesTemplate\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{c828847f-61a3-431f-9a6c-725e5085b776}</SharePointProjectItemId>
+      <SharePointProjectItemId>{e0ba04a8-33e8-438c-b8a7-6236c63aecbb}</SharePointProjectItemId>
     </None>
     <None Include="Features\SharepointMessengerList\SharepointMessengerList.feature">
       <FeatureId>{dc761ad0-ace8-497a-9d6f-89e2e507aa85}</FeatureId>
@@ -111,8 +114,8 @@
       <SharePointProjectItemId>{6d3f9a32-9f9f-46b8-bc94-df54efde3b28}</SharePointProjectItemId>
     </None>
     <None Include="key.snk" />
-    <Content Include="Definitions\ChatMessagesTemplate\Elements.xml" />
     <Content Include="Definitions\ChatMessagesTemplate\ChatMessages\Elements.xml" />
+    <Content Include="Definitions\ChatMessagesTemplate\Elements.xml" />
     <Content Include="Definitions\ChatMessagesTemplate\Schema.xml" />
     <Content Include="Layouts\SharepointMessenger\css\azure\images\animated-overlay.gif" />
     <Content Include="Layouts\SharepointMessenger\css\azure\images\ui-bg_flat_0_aaaaaa_40x100.png" />

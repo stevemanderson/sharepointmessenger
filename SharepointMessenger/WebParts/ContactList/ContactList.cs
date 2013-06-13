@@ -16,6 +16,25 @@ namespace SharepointMessenger.WebParts.ContactList
     {
         protected int _messageTimeOut = 5000;
         protected bool _showContactImages = false;
+        protected string _defaultSite = "";
+
+        [Category("Sharepoint Messenger")]
+        [WebPartStorage(Storage.Shared)]
+        [FriendlyNameAttribute("Default Site")]
+        [Description("The name of the default site. The site that the Chat Messages List feature is activated.")]
+        [Browsable(true)]
+        [DefaultValue("")]
+        public string DefaultSite
+        {
+            get
+            {
+                return _defaultSite;
+            }
+            set
+            {
+                _defaultSite = value;
+            }
+        }
 
         [Category("Sharepoint Messenger")]
         [WebPartStorage(Storage.Shared)]
@@ -61,6 +80,7 @@ namespace SharepointMessenger.WebParts.ContactList
             Control control = Page.LoadControl(_ascxPath);
             (control as ContactListUserControl).MessageTimeOut = MessageTimeOut;
             (control as ContactListUserControl).ShowContactImages = ShowContactImages;
+            (control as ContactListUserControl).DefaultSite = DefaultSite;
             Controls.Add(control);
         }
     }

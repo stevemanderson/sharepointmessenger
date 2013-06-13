@@ -18,6 +18,7 @@ namespace SharepointMessenger.Models
                 {
                     using (SPWeb webelevated = site.OpenWeb(web.ID))
                     {
+                        SPSecurity.CatchAccessDeniedException = false;
                         SPList list = GetList(webelevated);
                         if (list.Folders.OfType<SPListItem>().Any(p => p.Name == name)) throw new Exception(String.Format(Language.ConversationAlreadyExists, name));
                         newFolder = list.Folders.Add(list.RootFolder.ServerRelativeUrl, SPFileSystemObjectType.Folder, name);
@@ -108,12 +109,12 @@ namespace SharepointMessenger.Models
 
         public static void DeleteList(SPWeb web)
         {
-            SPList list = GetList(web);
+            SPList list = web.Lists.TryGetList(Language.SMUListName);
             if (list != null)
                 list.Delete();
         }
 
-        public static void CreatePersmission(SPWeb web)
+        public static void CreatePermission(SPWeb web)
         {
             DeletePermission(web);
             SPRoleDefinition def = new SPRoleDefinition()
@@ -153,6 +154,8 @@ namespace SharepointMessenger.Models
                 SPGroup grp = web.SiteGroups.Cast<SPGroup>().FirstOrDefault(p => p.Name == Language.SMUGroupName);
                 if (grp == null)
                     throw new Exception(Language.GroupCreateError);
+                if (!web.HasUniqueRoleAssignments)
+                    throw new Exception(Language.WebInheritsAssignments);
                 SPRoleAssignment ass = new SPRoleAssignment(grp);
                 SPRoleDefinition def = web.RoleDefinitions[Language.SMUPermissionName];
                 ass.RoleDefinitionBindings.Add(def);
