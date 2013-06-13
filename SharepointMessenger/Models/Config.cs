@@ -126,7 +126,9 @@ namespace SharepointMessenger.Models
                     SPBasePermissions.ViewListItems |
                     SPBasePermissions.ViewFormPages |
                     SPBasePermissions.Open |
-                    SPBasePermissions.ViewPages
+                    SPBasePermissions.ViewPages |
+                    SPBasePermissions.BrowseUserInfo |
+                    SPBasePermissions.EditMyUserInfo
             };
             web.RoleDefinitions.Add(def);
             web.Update();
