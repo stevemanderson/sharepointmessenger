@@ -20,7 +20,7 @@
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/json2.js"></script>
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-1.9.1.min.js"></script>
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-ui-1.10.2.custom.min.js"></script>
-<script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-sharepointmessenger-1.0.1.js"></script>
+<script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-sharepointmessenger-1.0.1.js?v=1"></script>
 
 <script type="text/javascript">
     $('#sharepoint-messenger').sharepointmessenger({CurrentUsername:'<%= CurrentMessageUser %>', TimeZone:<%= UserTimeZone %>, MessageTimeOut: <%= MessageTimeOut %>, ShowContactImages: <%= ShowContactImages.ToString().ToLower() %>, DefaultSite: '<%= DefaultSite %>' } );

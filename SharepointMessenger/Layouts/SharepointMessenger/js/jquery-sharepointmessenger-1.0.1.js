@@ -22,7 +22,8 @@
             MessageTimeOut: 5000,
             DefaultSite: "",
             Service: "_vti_bin/SharepointMessenger.WebServices/SharepointMessenger.svc",
-            FormDigestID: "__REQUESTDIGEST"
+            FormDigestID: "__REQUESTDIGEST",
+            EnableBlink: true
         }, options);
         var digestId = $('#' + settings.FormDigestID).val();
         settings = $.extend({
@@ -92,6 +93,27 @@
                 $('#sharepoint-messenger').prepend(err);
             }
         }
+
+        // handle the blinking
+        var title = document.title;
+        var isBlinking = false;
+        function blinkTitle() {
+            if (isBlinking) {
+                if (document.title == "New Message") {
+                    document.title = title;
+                }
+                else {
+                    document.title = "New Message";
+                }
+
+            }
+            else {
+                document.title = title;
+            }
+            setTimeout(function () { blinkTitle(); }, 2000);
+        }
+        // start the loop
+        blinkTitle();
 
         function getAdjustedDate() {
             var d = new Date();
@@ -310,6 +332,7 @@
 
         function UpdateMessageCounts(xhr) {
             var result = JSON.parse(xhr.responseText);
+            isBlinking = false;
             $.each(result, function () {
                 var o = this;
                 var found = false;
@@ -331,12 +354,16 @@
 
                 if (found) return;
 
-
                 var count = li.find('span');
                 if (count > 0) {
                     li.addClass('ui-widget-header');
                 }
                 count.html(o.Count);
+
+                // set the blinking status
+                if (parseInt(o.Count) > 0) {
+                    isBlinking = true;
+                }
             });
             setTimeout(function () { GetUserMessageCounts(); }, settings.MessageTimeOut);
         }
