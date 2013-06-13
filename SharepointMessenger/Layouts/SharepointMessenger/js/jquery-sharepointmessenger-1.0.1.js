@@ -20,7 +20,8 @@
             TimeZone: 0,
             CurrentUsername: "You",
             MessageTimeOut: 5000,
-            Service: "/_vti_bin/SharepointMessenger.WebServices/SharepointMessenger.svc",
+            DefaultSite: "",
+            Service: "_vti_bin/SharepointMessenger.WebServices/SharepointMessenger.svc",
             FormDigestID: "__REQUESTDIGEST"
         }, options);
         var digestId = $('#' + settings.FormDigestID).val();
@@ -65,7 +66,6 @@
                 var date = new Date();
                 date.setDate(date.getDate() + days);
                 var value = this.Value() + ((days == null) ? "" : "; expires=" + date.toUTCString());
-                console.log(value);
                 document.cookie = this.Name + "=" + value;
             },
             remove: function () {
@@ -120,7 +120,15 @@
         var service = {
             Send: function (method, uri, data, onComplete, params, onFail) {
                 var xmlhttp = new XMLHttpRequest();
-                xmlhttp.open(method.toString().toUpperCase(), settings.Service + '/' + uri, true);
+                var tick = '';
+                if (method.toString().toUpperCase() == "GET") {
+                    tick = '?' + (new Date()).getTime();
+                }
+                var site = '/';
+                if (settings.DefaultSite.length > 0) {
+                    site = '/' + settings.DefaultSite + '/';
+                }
+                xmlhttp.open(method.toString().toUpperCase(), site + settings.Service + '/' + uri + tick, true);
                 xmlhttp.setRequestHeader('X-RequestDigest', settings.FormDigest);
                 xmlhttp.setRequestHeader('Content-Type', 'application/json');
                 xmlhttp.setRequestHeader('Pragma', 'no-cache');

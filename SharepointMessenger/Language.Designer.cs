@@ -230,5 +230,14 @@ namespace SharepointMessenger {
                 return ResourceManager.GetString("UserNotValidated", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The web you are trying to activate the Sharepoint Messenger feature for can not have inherited permissions..
+        /// </summary>
+        internal static string WebInheritsAssignments {
+            get {
+                return ResourceManager.GetString("WebInheritsAssignments", resourceCulture);
+            }
+        }
     }
 }

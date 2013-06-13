@@ -174,4 +174,7 @@
   <data name="UserNotValidated" xml:space="preserve">
     <value>The web service could not validate your request.</value>
   </data>
+  <data name="WebInheritsAssignments" xml:space="preserve">
+    <value>The web you are trying to activate the Sharepoint Messenger feature for can not have inherited permissions.</value>
+  </data>
 </root>

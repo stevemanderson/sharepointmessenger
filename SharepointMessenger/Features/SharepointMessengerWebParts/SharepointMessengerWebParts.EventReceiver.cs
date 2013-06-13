@@ -5,7 +5,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using SharepointMessenger.Models;
 
-namespace SharepointMessenger.Features.SharepointMessengerList
+namespace SharepointMessenger.Features.SharepointMessengerWebParts
 {
     /// <summary>
     /// This class handles events raised during feature activation, deactivation, installation, uninstallation, and upgrade.
@@ -14,32 +14,27 @@ namespace SharepointMessenger.Features.SharepointMessengerList
     /// The GUID attached to this class may be used during packaging and should not be modified.
     /// </remarks>
 
-    [Guid("0952e11f-1393-468e-a93e-5a4ceebbc2ba")]
-    public class SharepointMessengerListEventReceiver : SPFeatureReceiver
+    [Guid("bb89d7c5-b03b-4fca-b493-50639f55303d")]
+    public class SharepointMessengerWebPartsEventReceiver : SPFeatureReceiver
     {
         // Uncomment the method below to handle the event raised after a feature has been activated.
 
         public override void FeatureActivated(SPFeatureReceiverProperties properties)
         {
-            using (SPWeb web = (properties.Feature.Parent as SPWeb))
+            using (SPSite site = (properties.Feature.Parent as SPSite))
             {
-                //Config.CreatePersmission(web);
-                Config.CreateGroup(web);
-                Config.CreateList(web);
-                Config.ApplyGroupRoleAssignments(web, Config.GetList(web));
+                Config.CreatePermission(site.RootWeb);
             }
         }
 
 
+        // Uncomment the method below to handle the event raised before a feature is deactivated.
 
         public override void FeatureDeactivating(SPFeatureReceiverProperties properties)
         {
-            // if you deactivate the feature, it deletes all the data for the feature.
-            using (SPWeb web = (properties.Feature.Parent as SPWeb))
+            using (SPSite site = (properties.Feature.Parent as SPSite))
             {
-                Config.DeleteList(web);
-                Config.DeleteGroup(web);
-                //Config.DeletePermission(web);
+                Config.DeletePermission(site.RootWeb);
             }
         }
 
@@ -53,10 +48,9 @@ namespace SharepointMessenger.Features.SharepointMessengerList
 
         // Uncomment the method below to handle the event raised before a feature is uninstalled.
 
-        public override void FeatureUninstalling(SPFeatureReceiverProperties properties)
-        {
-
-        }
+        //public override void FeatureUninstalling(SPFeatureReceiverProperties properties)
+        //{
+        //}
 
         // Uncomment the method below to handle the event raised when a feature is upgrading.
 

@@ -23,5 +23,5 @@
 <script type="text/javascript" src="/_layouts/SharepointMessenger/js/jquery-sharepointmessenger-1.0.1.js"></script>
 
 <script type="text/javascript">
-    $('#sharepoint-messenger').sharepointmessenger({CurrentUsername:'<%= CurrentMessageUser %>', TimeZone:<%= UserTimeZone %>, MessageTimeOut: <%= MessageTimeOut %>, ShowContactImages: <%= ShowContactImages.ToString().ToLower() %> } );
+    $('#sharepoint-messenger').sharepointmessenger({CurrentUsername:'<%= CurrentMessageUser %>', TimeZone:<%= UserTimeZone %>, MessageTimeOut: <%= MessageTimeOut %>, ShowContactImages: <%= ShowContactImages.ToString().ToLower() %>, DefaultSite: '<%= DefaultSite %>' } );
 </script>

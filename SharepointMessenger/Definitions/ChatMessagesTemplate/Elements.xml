@@ -10,6 +10,7 @@
       SecurityBits="11"
       Sequence="410"
       Hidden="true"
+      FolderCreation="true"
       DisplayName="Sharepoint Messenger - Chat Messages"
       Description="Hold all chat messages for Sharepoint Messenger"
       VersioningEnabled="false"
