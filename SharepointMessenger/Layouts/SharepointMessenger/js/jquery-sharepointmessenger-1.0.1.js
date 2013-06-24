@@ -65,7 +65,6 @@
                 var date = new Date();
                 date.setDate(date.getDate() + days);
                 var value = this.Value() + ((days == null) ? "" : "; expires=" + date.toUTCString());
-                console.log(value);
                 document.cookie = this.Name + "=" + value;
             },
             remove: function () {
