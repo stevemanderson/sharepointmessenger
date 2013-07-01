@@ -267,6 +267,7 @@
     <Content Include="Layouts\SharepointMessenger\css\grapello\images\ui-icons_888888_256x240.png" />
     <Content Include="Layouts\SharepointMessenger\css\grapello\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Layouts\SharepointMessenger\css\grapello\jquery-ui-1.10.2.custom.min.css" />
+    <Content Include="Layouts\SharepointMessenger\css\jquery.cssemoticons.css" />
     <Content Include="Layouts\SharepointMessenger\css\laminate\images\animated-overlay.gif" />
     <Content Include="Layouts\SharepointMessenger\css\laminate\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Layouts\SharepointMessenger\css\laminate\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -424,6 +425,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Layouts\SharepointMessenger\js\jquery-1.9.1.min.js" />
+    <Content Include="Layouts\SharepointMessenger\js\jquery.cssemoticons.min.js" />
     <Content Include="Layouts\SharepointMessenger\js\json2.js" />
     <Content Include="WebParts\ContactList\ContactListUserControl.ascx">
       <SubType>ASPXCodeBehind</SubType>

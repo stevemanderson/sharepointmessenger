@@ -23,7 +23,8 @@
             DefaultSite: "",
             Service: "_vti_bin/SharepointMessenger.WebServices/SharepointMessenger.svc",
             FormDigestID: "__REQUESTDIGEST",
-            EnableBlink: true
+            EnableBlink: true,
+            AddMessageCallback: function (li) { }
         }, options);
         var digestId = $('#' + settings.FormDigestID).val();
         settings = $.extend({
@@ -306,6 +307,7 @@
             }
             else { li.html(e.CreatedTimeOnly + " <b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message); }
             list.append(li);
+            settings.AddMessageCallback(li);
             return li;
         }
 
