@@ -22,7 +22,9 @@
             MessageTimeOut: 5000,
             DefaultSite: "",
             Service: "_vti_bin/SharepointMessenger.WebServices/SharepointMessenger.svc",
-            FormDigestID: "__REQUESTDIGEST"
+            FormDigestID: "__REQUESTDIGEST",
+            EnableBlink: true,
+            AddMessageCallback: function (li) { }
         }, options);
         var digestId = $('#' + settings.FormDigestID).val();
         settings = $.extend({
@@ -93,6 +95,27 @@
             }
         }
 
+        // handle the blinking
+        var title = document.title;
+        var isBlinking = false;
+        function blinkTitle() {
+            if (isBlinking) {
+                if (document.title == "New Message") {
+                    document.title = title;
+                }
+                else {
+                    document.title = "New Message";
+                }
+
+            }
+            else {
+                document.title = title;
+            }
+            setTimeout(function () { blinkTitle(); }, 2000);
+        }
+        // start the loop
+        blinkTitle();
+
         function getAdjustedDate() {
             var d = new Date();
             var localTime = d.getTime();
@@ -156,7 +179,7 @@
             Contacts: {
                 DataSource: service,
                 All: function (callback, params, onfail) {
-                    this.DataSource.Send('get', 'Contacts', {}, callback, params, onfail);
+                    this.DataSource.Send('post', 'Contacts', { "messageTimeOut": settings.MessageTimeOut }, callback, params, onfail);
                 },
                 GetContactInfoByID: function (id, callback, params, onfail) {
                     this.DataSource.Send('post', 'Contacts/ContactInfoByID', { "id": id }, callback, params, onfail);
@@ -174,7 +197,7 @@
                     this.DataSource.Send('post', 'ChatMessages', { "SenderID": id }, callback, params, onfail);
                 },
                 GetPendingMessageCounts: function (callback, params, onfail) {
-                    this.DataSource.Send('get', 'ChatMessages/PendingMessageCounts', {}, callback, params, onfail);
+                    this.DataSource.Send('post', 'ChatMessages/PendingMessageCounts', { "messageTimeOut": settings.MessageTimeOut }, callback, params, onfail);
                 },
                 ExportHistory: function (id, callback, params, onfail) {
                     this.DataSource.Send('post', 'ChatMessages/ExportHistory', { "SenderID": id }, callback, params, onfail);
@@ -284,6 +307,7 @@
             }
             else { li.html(e.CreatedTimeOnly + " <b>" + e.CreatedBy + "</b>" + ' says: ' + e.Message); }
             list.append(li);
+            settings.AddMessageCallback(li);
             return li;
         }
 
@@ -310,6 +334,7 @@
 
         function UpdateMessageCounts(xhr) {
             var result = JSON.parse(xhr.responseText);
+            isBlinking = false;
             $.each(result, function () {
                 var o = this;
                 var found = false;
@@ -318,11 +343,29 @@
                         found = true;
                     }
                 }
-                if (found) return;
+
+                // get all the online statuses
                 var li = $('#users li[data-id=' + o.ID + ']');
-                li.addClass('ui-widget-header');
+
+                if (o.IsOnline) {
+                    li.addClass('online');
+                }
+                else {
+                    li.removeClass('online');
+                }
+
+                if (found) return;
+
                 var count = li.find('span');
+                if (count > 0) {
+                    li.addClass('ui-widget-header');
+                }
                 count.html(o.Count);
+
+                // set the blinking status
+                if (parseInt(o.Count) > 0) {
+                    isBlinking = true;
+                }
             });
             setTimeout(function () { GetUserMessageCounts(); }, settings.MessageTimeOut);
         }
@@ -373,7 +416,11 @@
                 text: false
             });
             exportButton.click(function () {
-                var win = window.open(settings.Service + '/ChatMessages/ExportHistory/' + id, '_blank');
+                var site = '/';
+                if (settings.DefaultSite.length > 0) {
+                    site = '/' + settings.DefaultSite + '/';
+                }
+                var win = window.open(site + settings.Service + '/ChatMessages/ExportHistory/' + id, '_blank');
                 win.focus();
             });
 

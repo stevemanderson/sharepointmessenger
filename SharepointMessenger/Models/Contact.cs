@@ -37,5 +37,11 @@ namespace SharepointMessenger.Models
             get { return _emailAddress; }
             set { _emailAddress = value; }
         }
+        private bool _isOnline = false;
+        public bool IsOnline
+        {
+            get { return _isOnline; }
+            set { _isOnline = value; }
+        }
     }
 }

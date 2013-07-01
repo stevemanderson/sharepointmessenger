@@ -151,6 +151,15 @@ namespace SharepointMessenger {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to sm_onlinestatus.
+        /// </summary>
+        internal static string OnlineStatus {
+            get {
+                return ResourceManager.GetString("OnlineStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chat Message.
         /// </summary>
         internal static string SMUChatMessage {
