@@ -416,7 +416,11 @@
                 text: false
             });
             exportButton.click(function () {
-                var win = window.open(settings.Service + '/ChatMessages/ExportHistory/' + id, '_blank');
+                var site = '/';
+                if (settings.DefaultSite.length > 0) {
+                    site = '/' + settings.DefaultSite + '/';
+                }
+                var win = window.open(site + settings.Service + '/ChatMessages/ExportHistory/' + id, '_blank');
                 win.focus();
             });
 
