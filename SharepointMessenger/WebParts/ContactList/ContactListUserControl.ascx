@@ -34,5 +34,5 @@
             AddMessageCallback: function(li) {
                 li.emoticonize();
             }
-        } );
+        });
 </script>
