@@ -1,6 +1,8 @@
 SharePoint Messenger
 ===================
 
+I won't be updating this project any longer, it is legacy. 
+
 Description
 -
 I started this project to give SharePoint the chat/message functionality and to expand my SharePoint knowledge. I know that there are features out there that allow chat functionality however, I wanted to take it a bit further and allow users to specify the recipients, allow administration of the list items and groups and to give a richer experience to the end user.
